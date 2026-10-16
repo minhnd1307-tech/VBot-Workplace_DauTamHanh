@@ -51,7 +51,7 @@ Toàn bộ hạ tầng GCP được mã hóa bằng Terraform chuẩn mô-đun h
 * `terraform/modules/ai_gateway/`: (TV2) Kích hoạt Vertex AI APIs, Artifact Registry, Monitoring Alert Policy (H8), Audit Log Bucket 12 tháng (H5), Vertex AI Private Endpoint.
 * `terraform/modules/network/`: (TV1) VPC Custom, Private Subnets, Cloud NAT Multi-AZ, Cloud Armor WAF.
 * `terraform/modules/gke/`: (TV1) Cụm GKE Standard Multi-AZ, Workload Identity, Autoscaling Node Pool.
-* `terraform/modules/data/`: (TV3) Cloud SQL HA pgvector, Cloud Storage Workspaces, Redis HA, Cloud Tasks.
+* `terraform/modules/data/`: (TV3) Cloud SQL HA PG16 + pgvector, GCS Workspaces (CMEK, prefix), Redis HA, Cloud Tasks, Pub/Sub + Scheduler cho connectors.
 * `terraform/modules/security_sandbox/`: (TV4) GKE Sandbox gVisor Node Pool, Cloud KMS, Secret Manager, Cloud DLP.
 
 **Kiểm tra tính hợp lệ cú pháp:**

@@ -1,0 +1,869 @@
+{
+ "source": "Cloud Billing Catalog API v1 (services/*/skus, currencyCode=USD)",
+ "retrieved": "2026-10-16",
+ "skus": [
+  {
+   "skuId": "0152-2835-C929",
+   "description": "Cloud SQL for PostgreSQL: Regional - vCPU in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SQLGen2InstancesCPU",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 115600000
+        }
+       }
+      ],
+      "usageUnitDescription": "hour",
+      "baseUnit": "s",
+      "baseUnitDescription": "second",
+      "baseUnitConversionFactor": 3600
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "027D-B6C7-CCA2",
+   "description": "Message Delivery Basic",
+   "category": {
+    "serviceDisplayName": "Cloud Pub/Sub",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "Message",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "TiBy",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 0
+        }
+       },
+       {
+        "startUsageAmount": 0.009765625,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "40",
+         "nanos": 0
+        }
+       }
+      ],
+      "usageUnitDescription": "tebibyte",
+      "baseUnit": "By",
+      "baseUnitDescription": "byte",
+      "baseUnitConversionFactor": 1099511627776
+     },
+     "aggregationInfo": {
+      "aggregationLevel": "ACCOUNT",
+      "aggregationInterval": "MONTHLY",
+      "aggregationCount": 1
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "378A-D762-1F74",
+   "description": "Operations",
+   "category": {
+    "serviceDisplayName": "Cloud Tasks",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "CloudTasks",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "count",
+      "displayQuantity": 1000000,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 0
+        }
+       },
+       {
+        "startUsageAmount": 1000000,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 400
+        }
+       }
+      ],
+      "usageUnitDescription": "count",
+      "baseUnit": "count",
+      "baseUnitDescription": "count",
+      "baseUnitConversionFactor": 1
+     },
+     "aggregationInfo": {
+      "aggregationLevel": "ACCOUNT",
+      "aggregationInterval": "MONTHLY",
+      "aggregationCount": 1
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "37B4-B2B7-C640",
+   "description": "Cloud SQL for PostgreSQL: Regional - RAM in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SQLGen2InstancesRAM",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 19600000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte hour",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 3865470566400
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "4453-FEE4-941B",
+   "description": "Nearline Storage Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "NearlineStorage",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 10000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "45B3-606F-EE91",
+   "description": "Cloud SQL for PostgreSQL: Zonal - Standard storage in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SSD",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 238000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "4DBF-185F-A415",
+   "description": "Regional Standard Class A Operations",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "RegionalOps",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "count",
+      "displayQuantity": 1000,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 0
+        }
+       },
+       {
+        "startUsageAmount": 5000,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 5000
+        }
+       }
+      ],
+      "usageUnitDescription": "count",
+      "baseUnit": "count",
+      "baseUnitDescription": "count",
+      "baseUnitConversionFactor": 1
+     },
+     "aggregationInfo": {
+      "aggregationLevel": "ACCOUNT",
+      "aggregationInterval": "MONTHLY",
+      "aggregationCount": 1
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "5C0F-D226-757F",
+   "description": "Cloud SQL: Backups in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "PDSnapshot",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 112000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "76BA-5CAD-4338",
+   "description": "Standard Storage Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "RegionalStorage",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 20000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "7870-010B-2763",
+   "description": "Regional Standard Class B Operations",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "RegionalOps",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "count",
+      "displayQuantity": 1000,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 0
+        }
+       },
+       {
+        "startUsageAmount": 50000,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 400
+        }
+       }
+      ],
+      "usageUnitDescription": "count",
+      "baseUnit": "count",
+      "baseUnitDescription": "count",
+      "baseUnitConversionFactor": 1
+     },
+     "aggregationInfo": {
+      "aggregationLevel": "ACCOUNT",
+      "aggregationInterval": "MONTHLY",
+      "aggregationCount": 1
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "83A6-DA61-7797",
+   "description": "Cloud SQL for PostgreSQL: Regional - Standard storage in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SSD",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 476000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "8D92-97F6-DDF3",
+   "description": "Nearline Data Retrieval",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "NearlineOps",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 10000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte",
+      "baseUnit": "By",
+      "baseUnitDescription": "byte",
+      "baseUnitConversionFactor": 1073741824
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "8E89-0AC8-66C0",
+   "description": "Coldline Storage Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "ColdlineStorage",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 5000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "9559-D2EC-1D33",
+   "description": "Regional Nearline Class A Operations",
+   "category": {
+    "serviceDisplayName": "Cloud Storage",
+    "resourceFamily": "Storage",
+    "resourceGroup": "NearlineOps",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "count",
+      "displayQuantity": 1000,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 10000
+        }
+       }
+      ],
+      "usageUnitDescription": "count",
+      "baseUnit": "count",
+      "baseUnitDescription": "count",
+      "baseUnitConversionFactor": 1
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "A5D6-43A2-28A7",
+   "description": "Jobs",
+   "category": {
+    "serviceDisplayName": "Cloud Scheduler",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "Scheduler",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "count",
+      "displayQuantity": 31,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 0
+        }
+       },
+       {
+        "startUsageAmount": 93,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 3225806
+        }
+       }
+      ],
+      "usageUnitDescription": "count",
+      "baseUnit": "count",
+      "baseUnitDescription": "count",
+      "baseUnitConversionFactor": 1
+     },
+     "aggregationInfo": {
+      "aggregationLevel": "ACCOUNT",
+      "aggregationInterval": "MONTHLY",
+      "aggregationCount": 1
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "A728-AD0D-27B4",
+   "description": "Redis Capacity Standard M2 Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud Memorystore for Redis",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "Redis",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 75000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte hour",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 3865470566400
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "ABC0-67FF-FCAD",
+   "description": "Redis Capacity Standard M1 Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud Memorystore for Redis",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "Redis",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 114000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte hour",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 3865470566400
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "B4F3-4753-84D8",
+   "description": "Commitment - dollar based v1: Cloud SQL database asia-southeast1 for 1 year",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SQLGen1Instances",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 7500000
+        }
+       }
+      ],
+      "usageUnitDescription": "hour",
+      "baseUnit": "s",
+      "baseUnitDescription": "second",
+      "baseUnitConversionFactor": 3600
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "DE86-B401-E60F",
+   "description": "Cloud SQL for PostgreSQL: Zonal - vCPU in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SQLGen2InstancesCPU",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 57800000
+        }
+       }
+      ],
+      "usageUnitDescription": "hour",
+      "baseUnit": "s",
+      "baseUnitDescription": "second",
+      "baseUnitConversionFactor": 3600
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "EF83-F6A8-8EA7",
+   "description": "Cloud SQL for PostgreSQL: Zonal - RAM in Singapore",
+   "category": {
+    "serviceDisplayName": "Cloud SQL",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "SQLGen2InstancesRAM",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "asia-southeast1"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.h",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 9800000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte hour",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 3865470566400
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  },
+  {
+   "skuId": "F9EB-D3E1-ABDF",
+   "description": "Topics message backlog",
+   "category": {
+    "serviceDisplayName": "Cloud Pub/Sub",
+    "resourceFamily": "ApplicationServices",
+    "resourceGroup": "Message",
+    "usageType": "OnDemand"
+   },
+   "serviceRegions": [
+    "global"
+   ],
+   "pricingInfo": [
+    {
+     "summary": "",
+     "pricingExpression": {
+      "usageUnit": "GiBy.mo",
+      "displayQuantity": 1,
+      "tieredRates": [
+       {
+        "startUsageAmount": 0,
+        "unitPrice": {
+         "currencyCode": "USD",
+         "units": "0",
+         "nanos": 270000000
+        }
+       }
+      ],
+      "usageUnitDescription": "gibibyte month",
+      "baseUnit": "By.s",
+      "baseUnitDescription": "byte second",
+      "baseUnitConversionFactor": 2875910101401600.0
+     },
+     "currencyConversionRate": 1,
+     "effectiveTime": "2026-10-15T07:00:00Z"
+    }
+   ]
+  }
+ ]
+}

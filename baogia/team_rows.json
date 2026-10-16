@@ -1,5 +1,5 @@
 {
-  "source": "G03_baogia.xlsx commit 4351ac4 (TV2), cac dong khong thuoc TV1",
+  "source": "G03_baogia.xlsx commit 4351ac4 (TV2), cac dong khong thuoc TV1; dong TV3 (connectors, database, vector_db, object_storage, cache_queue) cap nhat tu nhanh tv3/data-workspace, chi tiet TV3_LamHoangPhuc.md",
   "rows": [
     {
       "component": "llm",
@@ -24,38 +24,101 @@
     },
     {
       "component": "connectors",
-      "y_nghia": "Tich hop SaaS Connectors (Google Workspace, M365, Notion, Jira, Confluence)",
-      "ghi_chu": "Microservices tich hop connector chay bang quyen OAuth uy nhiem 220 gio, chi phi nằm trong dong compute",
+      "y_nghia": "Gọi API SaaS (Gmail, Drive, Calendar, Outlook, OneDrive, SharePoint, Teams, Notion, Jira, Confluence) bằng OAuth ủy nhiệm của từng user",
+      "ghi_chu": "Phí gọi API của Google Workspace, Microsoft Graph, Notion, Jira, Confluence nằm trong license SaaS tập đoàn đang trả; connector worker chạy trên GKE nằm trong dòng compute, lưu lượng ra SaaS qua Cloud NAT nằm trong dòng network. Rate limit từng SaaS theo link bằng chứng; ~20.000 lượt gọi/ngày",
       "chi_phi": 0,
-      "bang_chung": "E04; https://cloud.google.com/compute/all-pricing"
+      "bang_chung": "https://developers.google.com/workspace/gmail/api/reference/quota; https://learn.microsoft.com/en-us/graph/throttling; https://developer.atlassian.com/cloud/jira/platform/rate-limiting/"
+    },
+    {
+      "component": "connectors",
+      "y_nghia": "Pub/Sub nhận thông báo thay đổi (Gmail/Drive watch, webhook M365/Jira/Confluence/Notion) cho đồng bộ index theo sự kiện",
+      "ghi_chu": "Pub/Sub Message Delivery, SKU 027D-B6C7-CCA2: 2,2 triệu event/tháng × 1 KB × 2 (publish + delivery) = 4.4 GB = 0.0043 TiB × 40 USD/TiB, cộng lưu 1 ngày ~0,1 GB × 0,27 USD (F9EB-D3E1-ABDF). Tính toàn bộ theo đơn giá niêm yết",
+      "chi_phi": 0.2,
+      "bang_chung": "E35; https://cloud.google.com/pubsub/pricing"
+    },
+    {
+      "component": "connectors",
+      "y_nghia": "Cloud Scheduler: delta sync 15 phút/lần trong giờ hành chính cho 5 nhóm connector",
+      "ghi_chu": "Cloud Scheduler Jobs, SKU A5D6-43A2-28A7: 5 job × 0.1 USD/job-tháng (0,003225806 USD/job-ngày × 31)",
+      "chi_phi": 0.5,
+      "bang_chung": "E36; https://cloud.google.com/scheduler/pricing"
+    },
+    {
+      "component": "connectors",
+      "y_nghia": "Bucket tạm connector-ingest (file tải từ Drive/SharePoint để tách chunk, tự xóa sau 7 ngày, CMEK)",
+      "ghi_chu": "GCS Standard Singapore: 15 GB-tháng × 0.02 USD + 150.000 thao tác ghi × 0.000005 USD (SKU 76BA-5CAD-4338, 4DBF-185F-A415)",
+      "chi_phi": 1.05,
+      "bang_chung": "E32; https://cloud.google.com/storage/pricing"
     },
     {
       "component": "database",
-      "y_nghia": "Cloud SQL for PostgreSQL 15 Regional Multi-AZ bat pgvector",
-      "ghi_chu": "Instance db-custom-4-16384 (4 vCPU, 16 GB RAM) Regional Multi-AZ 730 gio x 0,38 USD = 277,40 USD; 200 GB SSD Multi-AZ x 0,34 USD = 68,00 USD; backup snapshot = 20,00 USD",
-      "chi_phi": 365.4,
-      "bang_chung": "E08; https://cloud.google.com/sql/pricing"
+      "y_nghia": "Cloud SQL PostgreSQL 16 Regional HA (primary + standby khác zone, failover tự động): user, ACL, lịch sử chat 12 tháng, memory, metadata workspace",
+      "ghi_chu": "db-custom-4-16384, asia-southeast1, REGIONAL (multi-AZ): (4 vCPU × 0.1156 + 16 GB × 0.0196) = 0.776 USD/giờ × 730 giờ = 566.48 USD, committed use 1 năm trả 75% (giảm 25%, SKU B4F3-4753-84D8). SKU 0152-2835-C929, 37B4-B2B7-C640",
+      "chi_phi": 424.86,
+      "bang_chung": "E30; E31; https://cloud.google.com/sql/pricing"
+    },
+    {
+      "component": "database",
+      "y_nghia": "Ổ SSD Cloud SQL Regional HA 200 GB (chat 12 tháng ~84 GB, vector ~8 GB, memory + metadata ~4 GB, ×1,5 WAL/bloat, dư IOPS)",
+      "ghi_chu": "Regional Standard storage Singapore, SKU 83A6-DA61-7797: 200 GB × 0.476 USD/GB-tháng (giá regional đã gồm bản sao ở zone standby). Tự tăng tối đa 500 GB",
+      "chi_phi": 95.2,
+      "bang_chung": "E30; https://cloud.google.com/sql/pricing"
+    },
+    {
+      "component": "database",
+      "y_nghia": "Cloud SQL staging (môi trường staging): zonal, chỉ bật giờ hành chính bằng Cloud Scheduler",
+      "ghi_chu": "db-custom-1-3840 zonal: (1 × 0.0578 + 3.75 × 0.0098) × 220 giờ = 20.8 USD; SSD 20 GB × 0.238 = 4.76 USD; 2 job Scheduler bật/tắt × 0.1 USD (SKU DE86-B401-E60F, EF83-F6A8-8EA7, 45B3-606F-EE91, A5D6-43A2-28A7)",
+      "chi_phi": 25.76,
+      "bang_chung": "E30; E36; https://cloud.google.com/sql/pricing"
     },
     {
       "component": "vector_db",
-      "y_nghia": "Vector index luu tru 500.000 vectors tai lieu noi bo phuc vu RAG",
-      "ghi_chu": "Ket hop pgvector tren Cloud SQL va Vertex AI Vector Search endpoint co so, chi phi co ban nam trong dong database kem 1 index endpoint nho 80,00 USD",
-      "chi_phi": 80,
-      "bang_chung": "E02; https://cloud.google.com/vertex-ai/pricing"
+      "y_nghia": "pgvector (HNSW, 768 chiều) trong Cloud SQL: ~800.000 chunk knowledge base + memory, lọc theo ACL gốc bằng Row-Level Security ngay trong truy vấn ANN",
+      "ghi_chu": "Nằm trong dòng database (Cloud SQL Regional HA ở trên): vector ~8 GB đã tính vào ổ 200 GB, HNSW index ~3 GB nằm trong RAM 16 GB. Không thuê thêm dịch vụ vector riêng; RLS lọc theo acl_principals nên user không thấy chunk mình không có quyền",
+      "chi_phi": 0,
+      "bang_chung": "E30; E37; https://cloud.google.com/sql/docs/postgres/work-with-vectors"
     },
     {
       "component": "object_storage",
-      "y_nghia": "Cloud Storage (GCS) Standard Multi-AZ luu Workspace rieng 10GB/user",
-      "ghi_chu": "2.000 user x 5 GB luu tru thuc te = 10.000 GB x 0,023 USD = 230,00 USD; thao tac Class A/B = 15,00 USD; bucket staging = 10,00 USD",
-      "chi_phi": 255,
-      "bang_chung": "E09; https://cloud.google.com/storage/pricing"
+      "y_nghia": "GCS workspace riêng từng user (prefix user-workspaces/{user_id}/, UBLA, CMEK, quota 10 GB): dữ liệu ≤ 90 ngày ở lớp Standard",
+      "ghi_chu": "Standard Storage Singapore, SKU 76BA-5CAD-4338: 1050 GB (350 GB mới/tháng × 3 tháng; 2.000 user × ~160 MB/tháng gồm upload, file agent xuất, ảnh cấp 5, kết quả sandbox, +10% phiên bản cũ) × 0.02 USD/GB-tháng",
+      "chi_phi": 21,
+      "bang_chung": "E32; https://cloud.google.com/storage/pricing"
+    },
+    {
+      "component": "object_storage",
+      "y_nghia": "GCS workspace: file cũ hơn 90 ngày tự chuyển Nearline bằng lifecycle rule",
+      "ghi_chu": "Nearline Storage Singapore, SKU 4453-FEE4-941B: 3150 GB (tháng 4-12 × 350 GB) × 0.01 USD/GB-tháng. Tổng workspace 4.200 GB = 2,1 GB/user, dưới quota 10 GB",
+      "chi_phi": 31.5,
+      "bang_chung": "E32; https://cloud.google.com/storage/pricing"
+    },
+    {
+      "component": "object_storage",
+      "y_nghia": "Thao tác GCS workspace: ghi, đọc, chuyển lớp lifecycle, đọc lại file Nearline",
+      "ghi_chu": "Class A 1.32 triệu × 0.000005 + Class B 4.4 triệu × 4e-7 + chuyển lớp 440.000 object × 0.00001 + retrieval 160 GB × 0.01 USD (SKU 4DBF-185F-A415, 7870-010B-2763, 9559-D2EC-1D33, 8D92-97F6-DDF3); tính toàn bộ số thao tác theo đơn giá niêm yết",
+      "chi_phi": 14.36,
+      "bang_chung": "E32; https://cloud.google.com/storage/pricing"
+    },
+    {
+      "component": "object_storage",
+      "y_nghia": "Bucket workspace cho staging (dữ liệu giả, tự xóa sau 30 ngày)",
+      "ghi_chu": "Standard Storage Singapore, SKU 76BA-5CAD-4338: 50 GB × 0.02 USD/GB-tháng",
+      "chi_phi": 1,
+      "bang_chung": "E32; https://cloud.google.com/storage/pricing"
     },
     {
       "component": "cache_queue",
-      "y_nghia": "Memorystore Redis Standard HA Multi-AZ va Cloud Tasks queue",
-      "ghi_chu": "Instance Redis 5 GB Standard Tier HA Multi-AZ failover tu dong = 145,00 USD; Cloud Tasks 1.000.000 tac vu = 5,00 USD",
-      "chi_phi": 150,
-      "bang_chung": "E10; https://cloud.google.com/memorystore/docs/redis/pricing"
+      "y_nghia": "Memorystore for Redis Standard HA 5 GB (primary + replica khác zone, failover tự động): phiên, ngữ cảnh hội thoại, cache RAG, bộ đếm quota, cờ hủy tác vụ agent",
+      "ghi_chu": "Redis Capacity Standard M2 Singapore, SKU A728-AD0D-27B4: 5 GB × 730 giờ × 0.075 USD/GB-giờ. Chọn 5 GB vì bậc M2 rẻ hơn: 4 GB bậc M1 = 4 × 730 × 0.114 = 332.88 USD. Staging dùng Redis container trên node staging, nằm trong compute",
+      "chi_phi": 273.75,
+      "bang_chung": "E33; https://cloud.google.com/memorystore/docs/redis/pricing"
+    },
+    {
+      "component": "cache_queue",
+      "y_nghia": "Cloud Tasks: hàng đợi agent chạy nền cấp 4 (retry tối đa 10 phút) và hàng đợi đồng bộ connector",
+      "ghi_chu": "Cloud Tasks Operations, SKU 378A-D762-1F74: 4.2 triệu operation (132.000 tác vụ agent × 6 bước × 2 = 1,58 triệu; sync theo webhook 2,2 triệu; delta tick 0,35 triệu) × 0.4 USD/triệu, tính toàn bộ theo đơn giá niêm yết",
+      "chi_phi": 1.68,
+      "bang_chung": "E34; https://cloud.google.com/tasks/pricing"
     },
     {
       "component": "sandbox",
@@ -145,18 +208,6 @@
       "ngay": "2026-10-15"
     },
     {
-      "id": "E09",
-      "mo_ta": "Google Cloud Storage Multi-AZ Standard Bucket Pricing",
-      "link": "https://cloud.google.com/storage/pricing",
-      "ngay": "2026-10-15"
-    },
-    {
-      "id": "E10",
-      "mo_ta": "Google Cloud Memorystore Redis Standard HA va Cloud Tasks",
-      "link": "https://cloud.google.com/memorystore/docs/redis/pricing",
-      "ngay": "2026-10-15"
-    },
-    {
       "id": "E11",
       "mo_ta": "Google Cloud KMS va Secret Manager Pricing",
       "link": "https://cloud.google.com/kms/pricing",
@@ -173,6 +224,54 @@
       "mo_ta": "Google Cloud Sensitive Data Protection (Cloud DLP API) Pricing",
       "link": "https://cloud.google.com/sensitive-data-protection/pricing",
       "ngay": "2026-10-15"
+    },
+    {
+      "id": "E30",
+      "mo_ta": "Cloud SQL for PostgreSQL, Singapore: Regional vCPU 0.1156 USD/giờ, RAM 0.0196 USD/GB-giờ, storage 0.476 USD/GB-tháng; Zonal vCPU 0.0578, RAM 0.0098, storage 0.238 (SKU 0152-2835-C929, 37B4-B2B7-C640, 83A6-DA61-7797, DE86-B401-E60F, EF83-F6A8-8EA7, 45B3-606F-EE91)",
+      "link": "https://cloud.google.com/sql/pricing",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E31",
+      "mo_ta": "Cloud SQL committed use 1 năm, asia-southeast1: 0.0075 USD cho mỗi 0.01 USD/giờ cam kết, tức giảm 25% vCPU + RAM (SKU B4F3-4753-84D8)",
+      "link": "https://cloud.google.com/sql/cud",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E32",
+      "mo_ta": "Cloud Storage Singapore: Standard 0.020, Nearline 0.010 USD/GB-tháng; Class A 0.05 USD/10.000, Class B 0.004 USD/10.000; Nearline Class A 0.10 USD/10.000; Nearline retrieval 0.01 USD/GB (SKU 76BA-5CAD-4338, 4453-FEE4-941B, 4DBF-185F-A415, 7870-010B-2763, 9559-D2EC-1D33, 8D92-97F6-DDF3)",
+      "link": "https://cloud.google.com/storage/pricing",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E33",
+      "mo_ta": "Memorystore for Redis Standard tier, Singapore: M2 (5-10 GB) 0.075 USD/GB-giờ, M1 (1-4 GB) 0.114 USD/GB-giờ (SKU A728-AD0D-27B4, ABC0-67FF-FCAD)",
+      "link": "https://cloud.google.com/memorystore/docs/redis/pricing",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E34",
+      "mo_ta": "Cloud Tasks: 0.40 USD/triệu operation (SKU 378A-D762-1F74)",
+      "link": "https://cloud.google.com/tasks/pricing",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E35",
+      "mo_ta": "Pub/Sub: message delivery 40 USD/TiB, lưu message 0.27 USD/GB-tháng (SKU 027D-B6C7-CCA2, F9EB-D3E1-ABDF)",
+      "link": "https://cloud.google.com/pubsub/pricing",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E36",
+      "mo_ta": "Cloud Scheduler: 0.10 USD/job-tháng = 0.003225806 USD/job-ngày (SKU A5D6-43A2-28A7)",
+      "link": "https://cloud.google.com/scheduler/pricing",
+      "ngay": "2026-10-16"
+    },
+    {
+      "id": "E37",
+      "mo_ta": "Cloud SQL for PostgreSQL hỗ trợ extension pgvector (CREATE EXTENSION vector), không tính phí riêng ngoài instance",
+      "link": "https://cloud.google.com/sql/docs/postgres/work-with-vectors",
+      "ngay": "2026-10-16"
     }
   ]
 }
