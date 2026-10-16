@@ -89,7 +89,7 @@ function architecture() {
   const zx = i => 472 + i * 224;
   ['a', 'b', 'c'].forEach((z, i) => {
     s += box(zx(i), 414, 208, 74, { title: `Zone asia-southeast1-${z}`, titleSize: 13, color: C.zone,
-      lines: i === 0 ? ['app 1–2 node · sandbox 1 node', '+ staging 1 node Spot'] : ['app 1–2 node · sandbox 1 node'] });
+      lines: i === 0 ? ['app: 1 node 24/7 + 1 giờ HC', '+ staging 1 node Spot'] : ['app: 1 node giờ hành chính', 'sandbox gVisor (TV4)'] });
   });
 
   // Data trong VPC (Private IP)
@@ -185,8 +185,68 @@ function flow() {
   return svgWrap(s);
 }
 
+// ============================== SLIDE 11: CHI PHI ==============================
+// Doc so truc tiep tu G03_baogia.xlsx de khop 100% voi dong TOTAL.
+function costSlide() {
+  const XLSX = require('xlsx');
+  const rows = XLSX.utils.sheet_to_json(XLSX.readFile(path.join(__dirname, '..', 'G03_baogia.xlsx')).Sheets.BaoGia, { header: 1 }).slice(1);
+  const total = rows.find(r => r[0] === 'TOTAL')[3];
+  const by = {};
+  rows.filter(r => r[0] !== 'TOTAL').forEach(r => { by[r[0]] = (by[r[0]] || 0) + Number(r[3]); });
+  const sorted = Object.entries(by).sort((a, b) => b[1] - a[1]);
+  const top = sorted.slice(0, 5), rest = sorted.slice(5).reduce((a, x) => a + x[1], 0);
+  const bars = [...top, ['17 component còn lại', rest]];
+  const usd = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Don gia e2-standard-4 Singapore (cung nguon voi baogia/build_baogia.js)
+  const od = 4 * 0.02690931 + 16 * 0.00360594, cud = 4 * 0.016952865 + 16 * 0.002271742, spot = 4 * 0.01615 + 16 * 0.002164;
+  const levers = [
+    ['Autoscale theo giờ hành chính (4 node → 1 node ngoài giờ)', 3 * (730 - 220) * od, 'TV1'],
+    ['Committed use 1 năm cho node nền 24/7 (−37%)', 730 * (od - cud), 'TV1'],
+    ['Staging chạy Spot, chỉ giờ hành chính', 730 * od - 220 * spot, 'TV1'],
+    ['Staging chung cluster với prod (không thêm phí GKE)', 73, 'TV1'],
+    ['Vertex AI Context Caching (−75% token input lặp lại)', 350, 'TV2'],
+    ['Routing 5 cấp: 85% tác vụ chạy Gemini Flash', 2800, 'TV2'],
+  ];
+  const levTotal = levers.reduce((a, l) => a + l[1], 0);
+
+  let s = '';
+  s += label(40, 62, `Chi phí hằng tháng: ${usd(total)} USD`, { size: 38, bold: true });
+  s += label(40, 100, `${usd(total / 2000)} USD / DAU / tháng · 2.000 DAU · GCP asia-southeast1 · giá niêm yết, USD chưa VAT`, { size: 18, color: C.muted });
+
+  // Bieu do cot ngang: 5 hang muc lon nhat
+  s += label(40, 160, '5 hạng mục lớn nhất', { size: 20, bold: true });
+  const max = bars[0][1], bx = 300, bw = 420;
+  bars.forEach(([name, v], i) => {
+    const y = 185 + i * 78, w = Math.max(4, v / max * bw), last = i === bars.length - 1;
+    s += label(40, y + 30, name, { size: 17, bold: !last, color: last ? C.muted : C.ink });
+    s += `<rect x="${bx}" y="${y + 8}" width="${w}" height="34" rx="6" fill="${last ? '#BDC1C6' : C.gke[1]}"/>`;
+    s += label(bx + w + 12, y + 31, `${usd(v)}  ·  ${(v / total * 100).toFixed(1)}%`, { size: 16 });
+  });
+
+  // Bang don bay FinOps
+  const tx = 900;
+  s += `<rect x="${tx - 20}" y="130" width="700" height="${110 + levers.length * 62}" rx="14" fill="#F1F3F4"/>`;
+  s += label(tx, 168, 'Đòn bẩy tiết kiệm (USD/tháng)', { size: 20, bold: true });
+  levers.forEach(([t, v, who], i) => {
+    const y = 215 + i * 62;
+    s += label(tx, y, t, { size: 16 });
+    s += label(tx, y + 22, who === 'TV1' ? 'Hạ tầng · có trong Terraform' : 'Model · số của TV2', { size: 13, color: C.muted });
+    s += label(tx + 660, y + 8, '−' + usd(v), { size: 18, bold: true, anchor: 'end', color: '#188038' });
+  });
+  const ly = 215 + levers.length * 62;
+  s += `<line x1="${tx}" y1="${ly - 28}" x2="${tx + 660}" y2="${ly - 28}" stroke="#BDC1C6"/>`;
+  s += label(tx, ly, 'Tổng tiết kiệm so với cấu hình chạy 24/7, 1 model', { size: 16, bold: true });
+  s += label(tx + 660, ly, '−' + usd(levTotal), { size: 20, bold: true, anchor: 'end', color: '#188038' });
+
+  s += `<rect x="40" y="800" width="1520" height="64" rx="10" fill="#EAF2FE"/>`;
+  s += label(60, 828, `Số tổng khớp dòng TOTAL trong G03_baogia.xlsx (validator: ĐẠT). Cố định: phí GKE, LB, Cloud Armor, 1 FTE vận hành.`, { size: 15 });
+  s += label(60, 850, `Tăng theo lượng dùng: token LLM, egress, NAT. Chi tiết khi DAU gấp đôi ở Slide 12.`, { size: 15, color: C.muted });
+  return svgWrap(s);
+}
+
 const outDir = __dirname;
-const files = { 'slide02_kien_truc': architecture(), 'slide03_luong_request': flow() };
+const files = { 'slide02_kien_truc': architecture(), 'slide03_luong_request': flow(), 'slide11_chi_phi': costSlide() };
 let Resvg = null;
 try { ({ Resvg } = require('@resvg/resvg-js')); } catch (e) { /* chi xuat SVG */ }
 for (const [name, svg] of Object.entries(files)) {

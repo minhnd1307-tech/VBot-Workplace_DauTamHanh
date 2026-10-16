@@ -76,16 +76,16 @@ variable "node_disk_size_gb" {
   default     = 50
 }
 
-variable "min_nodes" {
+variable "total_min_nodes" {
   type        = number
-  description = "So node toi thieu MOI ZONE (ngoai gio: 1 x 3 zone = 3 node)"
+  description = "So node toi thieu TOAN pool (ngoai gio hanh chinh)"
   default     = 1
 }
 
-variable "max_nodes" {
+variable "total_max_nodes" {
   type        = number
-  description = "So node toi da MOI ZONE (gio cao diem)"
-  default     = 2
+  description = "So node toi da TOAN pool (gio cao diem, trai 3 zone)"
+  default     = 4
 }
 
 variable "staging_node_machine_type" {

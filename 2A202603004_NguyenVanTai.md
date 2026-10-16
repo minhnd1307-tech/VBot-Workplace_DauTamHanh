@@ -4,6 +4,7 @@
 |---|---|
 | **Họ tên** | Nguyen Van Tai |
 | **MSSV** | 2A202603004 |
+| **Nhóm** | G03 |
 | **Dự án** | VBot Workplace: kiến trúc production trên GCP cho 2.000 DAU |
 | **Vai trò** | TV1: Lead Architect, Platform & SRE |
 | **Component báo giá phụ trách** | `compute`, `load_balancer`, `network`, `cicd`, `ops_labor`, `licenses`, `contingency`, `TOTAL` |
@@ -15,14 +16,14 @@
 
 | Hạng mục (DoD) | Trạng thái |
 |---|---|
-| Terraform module `network` và `gke` chạy `terraform validate` hợp lệ | ✅ Xong. `terraform validate` ở root: **Success! The configuration is valid.** |
-| Root Terraform (`main.tf`, `variables.tf`, `outputs.tf`, `terraform.tfvars.example`) | ✅ Xong |
-| File `Gxx_baogia.xlsx`: khung đủ 22 component, 2 sheet, dòng của TV1 đã có giá và bằng chứng | ✅ Xong. Mọi dòng của TV1 qua validator |
-| File báo giá báo **ĐẠT** trên validator | ⏳ Chờ TV2, TV3, TV4 điền 17 dòng của họ. Đã thử với dữ liệu giả lập đủ dòng: **ĐẠT** |
+| Terraform module `network` và `gke` chạy `terraform validate` hợp lệ | ✅ `Success! The configuration is valid.` (validate ở root, gồm cả 5 module) |
+| Root Terraform (`main.tf`, `variables.tf`, `outputs.tf`, `terraform.tfvars.example`) | ✅ |
+| Gom báo giá của 4 thành viên vào `G03_baogia.xlsx` và validator báo **ĐẠT** | ✅ **ĐẠT, 0 lỗi, 0 cảnh báo** |
+| Chốt TOTAL đồng bộ với Slide 11 | ✅ **11,218.97 USD/tháng**, tức **5.61 USD/DAU**. Hình Slide 11 được sinh trực tiếp từ file báo giá |
 | Sơ đồ kiến trúc thể hiện Multi-AZ (3 zone) và đủ mã component | ✅ Slide 2 |
-| Slide 2, 3, 11 | ✅ Slide 2, 3 xong. ⏳ Slide 11 còn chờ số `TOTAL` cuối |
+| Slide 2, 3, 11 và phần mở đầu, kết luận khi thuyết trình | ✅ Hình, nội dung và kịch bản 2 phút 15 giây kèm 7 câu hỏi đáp dự phòng |
 
-**Chi phí phần TV1:** hạ tầng cloud **553.99 USD/tháng**. Cộng nhân sự 3,500 USD và gói support (tối thiểu 29 USD) thì phần TV1 là **4,082.99 USD/tháng**.
+**Chi phí phần TV1:** compute **284.84**, network **103.19**, load_balancer **31.75**, cicd **18.84**; ops_labor **3,500**, licenses **214.98**, contingency **338.10** (USD/tháng).
 
 ---
 
@@ -30,20 +31,17 @@
 
 | File | Nội dung |
 |---|---|
-| [terraform/main.tf](terraform/main.tf) | Root module. Nối 5 module, khai báo provider `google` và `google-beta` (~> 6.0) |
-| [terraform/variables.tf](terraform/variables.tf) | Biến toàn cục: zone, domain, sizing node, `db_password` (không còn mật khẩu mặc định trong code) |
-| [terraform/outputs.tf](terraform/outputs.tf) | Thêm output IP của LB, tên WAF policy, service account của node |
-| [terraform/terraform.tfvars.example](terraform/terraform.tfvars.example) | File mẫu cấu hình |
+| [terraform/main.tf](terraform/main.tf), [variables.tf](terraform/variables.tf), [outputs.tf](terraform/outputs.tf), [terraform.tfvars.example](terraform/terraform.tfvars.example) | Root module: nối 5 module, provider `google` và `google-beta` `~> 6.0`, biến sizing, `db_password` không có giá trị mặc định |
 | [terraform/modules/network/](terraform/modules/network/) | VPC, subnet, Private Service Access, firewall, Cloud NAT, IP và chứng chỉ TLS cho LB, SSL policy, Cloud Armor |
-| [terraform/modules/gke/](terraform/modules/gke/) | GKE regional private cluster 3 zone, node pool app có autoscale, node pool staging Spot, service account quyền tối thiểu |
-| [baogia/build_baogia.js](baogia/build_baogia.js) | Script sinh `Gxx_baogia.xlsx`. Đơn giá, SKU và giả định sizing nằm ở đầu file |
-| [baogia/check_baogia.js](baogia/check_baogia.js) | Kiểm tra file xlsx bằng **đúng** đoạn validator trong `vbot-capstone.html`, kết quả giống bản web |
-| [baogia/Gxx_baogia.xlsx](baogia/Gxx_baogia.xlsx) | File báo giá master (sheet `BaoGia` và `BangChung`) |
-| [slides/slide02_kien_truc.png](slides/slide02_kien_truc.png) / `.svg` | Sơ đồ Slide 2 |
-| [slides/slide03_luong_request.png](slides/slide03_luong_request.png) / `.svg` | Sơ đồ Slide 3 |
-| [slides/TV1_slide_2_3_11.md](slides/TV1_slide_2_3_11.md) | Chữ trên slide và lời nói cho Slide 2, 3, 11 |
-| [slides/gen_diagrams.js](slides/gen_diagrams.js) | Script vẽ lại 2 sơ đồ |
-| [.gitignore](.gitignore) | Loại `.terraform/`, `*.tfstate`, `terraform.tfvars`, `node_modules/` khỏi git |
+| [terraform/modules/gke/](terraform/modules/gke/) | GKE regional private cluster 3 zone, app pool 1→4 node, staging pool Spot, service account quyền tối thiểu |
+| [k8s/app-office-hours-scaler.yaml](k8s/app-office-hours-scaler.yaml) | CronJob nâng replica lúc 07:45 và hạ lúc 18:15 (T2–T6), đi kèm autoscale của node pool |
+| [G03_baogia.xlsx](G03_baogia.xlsx) | **File báo giá nộp bài** (sheet `BaoGia` và `BangChung`) |
+| [baogia/build_baogia.js](baogia/build_baogia.js) | Sinh `G03_baogia.xlsx`: dòng TV1 tính từ đơn giá có SKU, dòng nhóm lấy từ `team_rows.json` |
+| [baogia/team_rows.json](baogia/team_rows.json) | 15 dòng của TV2, TV3, TV4 cùng bằng chứng, trích nguyên văn từ bản G03 của TV2 |
+| [baogia/check_baogia.js](baogia/check_baogia.js) | Kiểm tra bằng **đúng** đoạn validator trong `vbot-capstone.html` |
+| [slides/slide02_kien_truc.png](slides/slide02_kien_truc.png), [slide03_luong_request.png](slides/slide03_luong_request.png), [slide11_chi_phi.png](slides/slide11_chi_phi.png) | Hình Slide 2, 3, 11, có cả bản `.svg` |
+| [slides/TV1_slide_2_3_11.md](slides/TV1_slide_2_3_11.md), [slides/gen_diagrams.js](slides/gen_diagrams.js) | Nội dung slide và script vẽ lại hình |
+| [KICH_BAN_PITCHING_TV1.md](KICH_BAN_PITCHING_TV1.md) | Kịch bản 00:00–01:15 và 06:00–07:00, bộ câu hỏi đáp của TV1 |
 
 ---
 
@@ -53,165 +51,119 @@
 
 | Tài nguyên | Mục đích | Ràng buộc |
 |---|---|---|
-| `google_project_service` (compute, servicenetworking) | Module tự bật API mình cần | |
-| VPC `vbot-prod-vpc` + subnet `10.10.0.0/20` (pod `10.20.0.0/16`, service `10.30.0.0/20`) | Mạng riêng cho GKE | H7 |
-| `private_ip_google_access = true` | Node gọi Vertex AI qua mạng nội bộ Google, không ra Internet | H1 |
-| Private Service Access (`/16` peering) | Cloud SQL và Redis của TV3 chỉ có IP private | H5 |
+| VPC `vbot-prod-vpc` + subnet regional `10.10.0.0/20` (pod `10.20.0.0/16`, service `10.30.0.0/20`) | Mạng riêng cho GKE; 1 subnet regional phủ cả 3 zone | H7 |
+| `private_ip_google_access = true` | Gọi Vertex AI qua mạng nội bộ Google, không ra Internet | H1 |
+| Private Service Access (`/16`) | Cloud SQL và Redis (TV3) chỉ có IP private | H5 |
 | Firewall: health check (35.191.0.0/16, 130.211.0.0/22) và traffic nội bộ | Mở tối thiểu | |
-| Cloud Router + Cloud NAT (`min_ports_per_vm = 256`, log lỗi) | Đường duy nhất ra ngoài, để connector gọi SaaS | H3 |
-| Global static IP, chứng chỉ TLS Google-managed, SSL policy `MODERN` TLS ≥ 1.2 | Phần edge của Global External ALB | H5 (mã hóa khi truyền) |
-| Cloud Armor: OWASP SQLi, XSS, rate limit theo IP (6.000 request/phút), default allow | WAF trước LB | H7 |
+| Cloud Router + Cloud NAT (1 gateway regional, managed) | Đường ra ngoài duy nhất, cho connector gọi SaaS | H3 |
+| Global IP, chứng chỉ TLS Google-managed, SSL policy `MODERN` TLS ≥ 1.2 | Phần edge của Global External ALB | H5 |
+| Cloud Armor: OWASP SQLi, XSS, rate limit theo IP (6.000 request/phút) | WAF. Quota theo user nằm ở LLM Gateway (TV2) | H7, H8 |
 
-> **Ghi chú thiết kế:** Kế hoạch ban đầu ghi "3 subnet cho 3 zone". Trên GCP, subnet là tài nguyên **regional**, nên **1 subnet đã phủ cả 3 zone**. Multi-AZ do GKE (`node_locations`) và các dịch vụ HA đảm nhận, không cần chia subnet theo zone.
->
-> **Rate limit:** 2.000 nhân viên thường đi ra Internet qua vài IP NAT của văn phòng. Nếu giữ ngưỡng cũ 100 request/phút cho mỗi IP thì cả công ty sẽ bị chặn. Vì vậy ngưỡng theo IP được đặt cao (6.000/phút) để chống DDoS, còn quota theo từng user và đơn vị đặt ở LLM Gateway (H8, TV2).
+> Kế hoạch ban đầu ghi "3 subnet / 3 zone", nhưng trên GCP subnet là tài nguyên regional nên 1 subnet đã phủ cả 3 zone. Bảng sizing của TV2 ghi "2 Cloud NAT gateway", nhưng Cloud NAT là dịch vụ managed, tự HA, nên 1 gateway là đủ. Ngưỡng rate limit theo IP đặt cao vì cả công ty đi ra qua vài IP NAT văn phòng.
 
 ### 3.2 Module `gke`
 
 | Cấu hình | Giá trị | Lý do |
 |---|---|---|
-| Loại cluster | Regional, `node_locations` = asia-southeast1-a/b/c | Control plane và node trải 3 AZ (H7) |
-| Private nodes, `master_authorized_networks` (biến) | Node không có IP public | Bảo mật |
-| `datapath_provider = ADVANCED_DATAPATH` (Dataplane V2) | Thực thi NetworkPolicy chặn egress của sandbox (file YAML của TV4) | H3 |
-| Workload Identity + `workload_metadata_config = GKE_METADATA` | Pod không đọc được metadata của node, không cần key service account | H2, H3 |
-| Service account riêng cho node, 5 role tối thiểu | Không dùng default compute SA có quyền Editor | H2 |
-| `autoscaling_profile = OPTIMIZE_UTILIZATION` | Scale down nhanh ngoài giờ | FinOps |
-| **App pool**: e2-standard-4, 1–2 node mỗi zone (3–6 node), `BALANCED` | Ngoài giờ 3 node (vẫn đủ 3 AZ), cao điểm 6 node | H7, FinOps |
-| **Staging pool**: e2-standard-4 **Spot**, 1 zone, 0–1 node, taint `env=staging` | Đề yêu cầu có 1 staging. Dùng chung cluster nên không trả thêm phí GKE | FinOps |
-| Bảo trì 18:00 UTC (01:00 giờ Việt Nam) | Ngoài giờ hành chính | H7 |
-| `release_channel = REGULAR`, `deletion_protection = true` | Vận hành an toàn | |
+| Cluster | Regional, `node_locations` = asia-southeast1-a/b/c, private nodes | H7, bảo mật |
+| Dataplane V2 | Thực thi NetworkPolicy chặn egress của sandbox (TV4) | H3 |
+| Workload Identity, `GKE_METADATA`, service account riêng với 5 role | Pod không đọc được metadata của node, không cần key | H2, H3 |
+| **App pool** e2-standard-4, `total_min_node_count = 1`, `total_max_node_count = 4`, `BALANCED` | Theo sizing TV2 (peak 3,5 RPS → 4 node). Ngoài giờ còn 1 node, giờ hành chính 4 node trải 3 AZ | H7, FinOps |
+| **Staging pool** e2-standard-4 Spot, 0–1 node, taint `env=staging` | Đề yêu cầu 1 staging; chung cluster nên không thêm phí GKE | FinOps |
+| `OPTIMIZE_UTILIZATION`, bảo trì 01:00 giờ Việt Nam, `REGULAR` channel, `deletion_protection` | Vận hành | H7 |
 
-**Output cho nhóm:** `cluster_name`, `cluster_id`, `node_service_account_email` (TV4 có thể dùng lại cho sandbox pool). Output của `network`: `vpc_id`, `private_vpc_connection` (TV3 dùng), `waf_policy_name`, `lb_ip_name`, `lb_cert_name`, `ssl_policy_name` (manifest Gateway/Ingress của K8s tham chiếu theo tên).
+**Output cho nhóm:** `cluster_name`, `node_service_account_email`; từ module network: `vpc_id`, `private_vpc_connection`, `waf_policy_name`, `lb_ip_name`, `lb_cert_name`, `ssl_policy_name`.
 
-### 3.3 Sửa lỗi tích hợp để root `terraform validate` chạy được
+### 3.3 Tích hợp
 
-Trước khi sửa, `terraform validate` ở root **lỗi 3 chỗ**, đều nằm ngoài module của TV1. Với vai trò Lead tích hợp, mình sửa ở mức tối thiểu và **cần các bạn xác nhận lại**:
+- Lúc đầu, root `terraform validate` lỗi 3 chỗ trong module của TV2 và TV4 (`locals.services`, `sandbox_config` cần `google-beta`, DLP thiếu `max_findings_per_item`). Commit `4351ac4` của TV2 sửa trùng đúng các lỗi này. Khi merge, mình giữ bản của TV2 cho module của họ, còn root thống nhất về provider `~> 6.0`.
+- Bỏ mật khẩu DB viết cứng ở root: truyền qua `terraform.tfvars` (đã `.gitignore`) hoặc `TF_VAR_db_password`.
 
-| File | Lỗi | Sửa |
-|---|---|---|
-| `modules/ai_gateway/main.tf` (TV2) | `toset(locals.services)` → "undeclared resource" | Đổi thành `local.services` |
-| `modules/security_sandbox/main.tf` (TV4) | `sandbox_config` (gVisor) **không có** trong provider `google`, kể cả bản 6.50 | Thêm `provider = google-beta` cho `sandbox_pool`, khai báo `required_providers` trong module, root truyền `providers` |
-| `modules/security_sandbox/main.tf` (TV4) | DLP `limits` thiếu tham số bắt buộc `max_findings_per_item` | Thêm `max_findings_per_item = 100` |
-
-> Khi merge vào `main`, commit `4351ac4` của TV2 đã tự sửa đúng 3 lỗi trên. Lúc gộp, mình giữ bản của TV2 cho `security_sandbox` và `ai_gateway`. Ở root, mình giữ provider `~> 6.0` và bỏ khai báo `google-beta 5.20` bị lặp. Sau merge, `terraform validate` vẫn **Success**.
-| `variables.tf` (root) | Mật khẩu DB viết cứng trong `default` | Bỏ default. Truyền qua `terraform.tfvars` (đã gitignore) hoặc `TF_VAR_db_password` |
-
-Còn lại: `terraform fmt -check` báo `modules/ai_gateway/main.tf` lệch căn lề. TV2 chạy `terraform fmt` là xong. Module `data` (TV3) vẫn có `db_password` mặc định trong code, nên bỏ.
-
-**Cách kiểm tra lại:**
 ```bash
-cd terraform
-terraform init -backend=false
-terraform validate      # => Success! The configuration is valid.
+cd terraform && terraform init -backend=false && terraform validate   # Success!
 ```
 
 ---
 
-## 4. Báo giá
+## 4. Báo giá `G03_baogia.xlsx`
 
-### 4.1 Nguồn đơn giá
+### 4.1 Rà soát và chỉnh các dòng TV1 trong bản G03 của TV2
 
-Toàn bộ đơn giá lấy từ **Cloud Billing Catalog API** của Google (giá niêm yết công khai, USD) ngày 2026-10-16. Mỗi dòng ghi **SKU ID**, nên giám khảo có thể tra lại chính xác. Riêng gói Support lấy từ trang `cloud.google.com/support`. Không dùng free tier, trial hay credit. Với các SKU có bậc 0 USD ban đầu (Cloud Build, Artifact Registry), mình vẫn tính **toàn bộ** lượng dùng theo đơn giá có phí.
-
-### 4.2 Giả định sizing (bản nháp, chờ TV2 chốt)
-
-| Đại lượng | Giá trị | Căn cứ |
-|---|---|---|
-| Request | 25 req/user/ngày × 2.000 = 50.000/ngày × 22 ngày ≈ **1,1 triệu/tháng** | Kế hoạch nhóm (TV2) |
-| Cao điểm | ~50.000 / 10 giờ ≈ 1,4 RPS trung bình, × 3 lúc cao điểm ≈ 4–5 RPS chat (~50 HTTP RPS) | |
-| Pod production | ~12,75 vCPU / 25,5 GB request (web 3, gateway 3, orchestrator 3, connector 3, indexer 2, export 2, agent worker 2, guardrail 2) | Phải ≥ 2 replica ở 2 zone khác nhau |
-| Node app | e2-standard-4: **3 node 24/7** (1 mỗi zone) + **3 node trong 220 giờ** cao điểm | 6 node × ~3,9 vCPU có thể cấp phát ≈ 23 vCPU, dư cho system pod và failover mất 1 zone |
-| Staging | 1 node Spot, 220 giờ/tháng | |
-| LB data | vào 70 GB, ra 200 GB/tháng | 1,1 triệu × 20 KB + upload; response, asset, file DOCX/XLSX/PPTX |
-| Egress Internet | 220 GB/tháng (Singapore → APAC) | 200 GB qua LB + 20 GB ra SaaS |
-| Cloud NAT | 300 GB/tháng | Gọi API SaaS + đồng bộ index |
-| Inter-zone | 200 GB/tháng | Traffic pod ↔ pod và pod ↔ SQL/Redis giữa các zone |
-| Cloud Armor | 4 rule, 15 triệu request/tháng | ~10 HTTP call mỗi request chat + asset |
-| CI/CD | 10 service × 2 build/ngày × 22 ngày × 6 phút = 2.640 phút; registry 30 GB | |
-
-### 4.3 Các dòng báo giá của TV1
-
-| Component | Hạng mục | Cách tính | USD/tháng |
+| Dòng | Bản trước | Vấn đề | Bản chốt |
 |---|---|---|---|
-| compute | Phí GKE regional cluster (prod và staging chung) | 1 × 730 h × 0.10 | 73.00 |
-| compute | App pool, phần nền 24/7, **CUD 1 năm** | 3 node × 730 h × 0.104159 (4 × 0.016952865 + 16 × 0.002271742) | 228.11 |
-| compute | App pool, scale-out giờ cao điểm | 3 node × 220 h × 0.165332 (4 × 0.02690931 + 16 × 0.00360594) | 109.12 |
-| compute | Staging pool, Spot | 1 node × 220 h × 0.099224 | 21.83 |
-| compute | Boot disk PD Standard | 210.3 GB-tháng × 0.044 | 9.25 |
-| load_balancer | Forwarding rule global (tới 5 rule) | 730 h × 0.025 | 18.25 |
-| load_balancer | Data processing Singapore | 270 GB × 0.009 | 2.43 |
-| network | Cloud NAT gateway | 5.260 VM-h × 0.0014 | 7.36 |
-| network | IP của NAT | 1 × 730 h × 0.005 | 3.65 |
-| network | NAT data processing | 300 GB × 0.045 | 13.50 |
-| network | Egress Premium, Singapore → APAC | 220 GB × 0.12 | 26.40 |
+| compute | 239.83 | Giá 0.134 USD/giờ là giá region Mỹ (Singapore là 0.165332); 4 node chỉ chạy 220 giờ nên ban đêm không còn node nào | **284.84** |
+| load_balancer | 30.25 | Data processing ở Singapore là 0.009 USD/GB, không phải 0.008 | **31.75** |
+| network | 150.70 | "2 NAT × 730 giờ × 0.045": 0.045 là giá mỗi GB, giá gateway là 0.0014 USD/VM-giờ | **103.19** |
+| cicd | 8.60 | Cloud Build e2-standard-2 là 0.006 USD/phút, không phải 0.003 | **18.84** |
+| licenses | 500.00 | Enhanced Support tính 10% chi phí (khoảng 700), con số 500 không khớp bằng chứng | **214.98** (Standard, 3%) |
+| contingency | 500.00 | "5% tổng" không khớp phép tính | **338.10** (10% × llm + embedding) |
+
+Đề trừ 5 điểm cho mỗi dòng có bằng chứng không khớp đơn giá. Sau khi chỉnh, **TOTAL giảm từ 11,656.65 xuống 11,218.97 USD (−437.68)**.
+
+### 4.2 Sizing dùng cho các dòng TV1 (theo bảng bàn giao của TV2)
+
+| Đại lượng | Giá trị | Nguồn |
+|---|---|---|
+| Request | 50.000/ngày, 1,1 triệu/tháng; peak 3,5 RPS | TV2 |
+| Node app | 1 node 24/7 + 3 node trong 220 giờ hành chính = 4 node trải 3 AZ | TV2: "4 node e2-standard-4, đêm xuống 1 node" |
+| LB data / Egress | 1.500 GB / 500 GB mỗi tháng | TV2 |
+| NAT data, inter-zone | 300 GB, 200 GB | TV1 ước lượng (connector, traffic giữa zone) |
+| Sandbox gắn NAT | 5 node × 220 giờ | Dòng sandbox của TV4 |
+| Cloud Armor | 4 rule, 15 triệu request | ~10 HTTP call cho mỗi request chat |
+| CI/CD | 2.640 phút build, 30 GB registry | 10 service × 2 build/ngày |
+
+### 4.3 Các dòng của TV1
+
+| Component | Hạng mục | Cách tính | USD |
+|---|---|---|---|
+| compute | Phí GKE regional (prod + staging chung) | 730 h × 0.10 | 73.00 |
+| compute | 1 node nền 24/7, CUD 1 năm | 730 h × 0.104159 | 76.04 |
+| compute | 3 node giờ hành chính | 3 × 220 h × 0.165332 | 109.12 |
+| compute | Staging Spot | 220 h × 0.099224 | 21.83 |
+| compute | Boot disk PD Standard | 110.3 GB-tháng × 0.044 | 4.85 |
+| load_balancer | Forwarding rule global | 730 h × 0.025 | 18.25 |
+| load_balancer | Data processing | 1.500 GB × 0.009 | 13.50 |
+| network | NAT gateway | 2.710 VM-h × 0.0014 | 3.79 |
+| network | IP của NAT | 730 h × 0.005 | 3.65 |
+| network | NAT data | 300 GB × 0.045 | 13.50 |
+| network | Egress Singapore → APAC | 500 GB × 0.12 | 60.00 |
 | network | Inter-zone | 200 GB × 0.01 | 2.00 |
-| network | Cloud Armor Standard | 5 + 4 × 1 + 15 × 0.75 | 20.25 |
+| network | Cloud Armor | 5 + 4 × 1 + 15 × 0.75 | 20.25 |
 | cicd | Cloud Build | 2.640 phút × 0.006 | 15.84 |
 | cicd | Artifact Registry | 30 GB × 0.10 | 3.00 |
-| ops_labor | 1 FTE SRE/MLOps | 1 × 3,500 | 3,500.00 |
-| licenses | Standard Support | max(29; 3% × chi phí cloud) (**công thức Excel**) | ≥ 29.00 |
-| contingency | Dự phòng cho token LLM và embedding | 10% × (llm + embedding) (**công thức Excel**) | chờ TV2 |
+| ops_labor | 1 FTE SRE/MLOps | 3,500 | 3,500.00 |
+| licenses | Standard Support | max(29; 3% × 7,165.89) (công thức Excel) | 214.98 |
+| contingency | Dự phòng token | 10% × (3,369.01 + 12) (công thức Excel) | 338.10 |
 
-**Tổng theo component:** compute **441.31**, network **73.16**, load_balancer **20.68**, cicd **18.84**, tổng hạ tầng **553.99 USD**.
-
-### 4.4 Cấu trúc file `Gxx_baogia.xlsx`
-
-- Sheet `BaoGia` có đúng 5 cột theo đề. 22 component: 19 bắt buộc, cộng `embedding`, `licenses`, `contingency`. Dòng cuối là `TOTAL = SUM(...)`.
-- 17 dòng của TV2, TV3, TV4 đã có sẵn component và ý nghĩa. Ghi chú đang để `CHỜ TVx điền`, cột Chi phí và Bằng chứng để trống.
-- `licenses`, `contingency` và `TOTAL` là **công thức**, tự cập nhật khi các bạn điền số trong Excel. Lưu bằng Excel hoặc Google Sheets để có giá trị đã tính trước khi đưa vào validator.
-- Sheet `BangChung` có E01–E13: mô tả, SKU, link, ngày lấy giá. Cột E để dán ảnh chụp màn hình.
-
-**Kết quả validator (`node check_baogia.js Gxx_baogia.xlsx`):**
-- File hiện tại: CHƯA ĐẠT, 35 lỗi. 34 lỗi thuộc 17 dòng đang chờ (mỗi dòng thiếu chi phí và bằng chứng). Lỗi còn lại ở dòng `contingency`: dòng này bằng 0 vì chưa có số `llm`.
-- Bản giả lập đã điền đủ 17 dòng: **ĐẠT**, `TOTAL` khớp tổng các dòng.
+Toàn bộ đơn giá lấy từ **Cloud Billing Catalog API** của Google, mỗi dòng ghi SKU ID. Bằng chứng TV1 là E16–E28 trong sheet `BangChung`, đánh số tiếp sau E01–E13 của nhóm. Không dùng free tier hay credit.
 
 ---
 
-## 5. Slide phụ trách
+## 5. Slide và thuyết trình
 
-| Slide | Nội dung | File |
-|---|---|---|
-| 2: Kiến trúc tổng thể | Sơ đồ đủ 19 component bắt buộc, mỗi hộp ghi mã component, thể hiện 3 zone, VPC, Private Service Access, Private Google Access, NAT → SaaS | `slides/slide02_kien_truc.png` |
-| 3: Luồng một request | Sequence 10 lane, 12 bước: SSO → WAF/LB → RBAC → guardrail/DLP → RAG lọc ACL → connector với OAuth của user → routing LLM → stream → sandbox gVisor → người dùng xác nhận → trả kết quả | `slides/slide03_luong_request.png` |
-| 11: Chi phí và FinOps | Khung slide, bảng phần TV1, 4 đòn bẩy tiết kiệm có số USD, ý chính khi DAU gấp đôi | `slides/TV1_slide_2_3_11.md` |
-
-**Đòn bẩy FinOps của phần hạ tầng** (so với 6 node on-demand chạy 24/7 và staging chạy riêng 24/7):
-
-| Đòn bẩy | Tiết kiệm/tháng |
+| Slide | Nội dung |
 |---|---|
-| Autoscale theo giờ hành chính (3 node nền, +3 node trong 220 giờ) | 252.96 |
-| Committed use 1 năm cho 3 node nền (giảm 37%) | 133.97 |
-| Staging trên Spot, chỉ chạy giờ hành chính | 98.86 |
-| Staging chung cluster với prod | 73.00 |
-| **Tổng** | **558.79** |
+| 2: Kiến trúc tổng thể | Đủ 19 component bắt buộc, mỗi hộp ghi mã; 3 zone; VPC, Private Service Access, Private Google Access, NAT → SaaS |
+| 3: Luồng một request | 10 lane, 12 bước: SSO → WAF/LB → RBAC → guardrail/DLP → RAG lọc ACL → connector với OAuth của user → routing LLM → stream → sandbox gVisor → người dùng xác nhận |
+| 11: Chi phí | **11,218.97 USD · 5.61 USD/DAU**, top 5 hạng mục, 6 đòn bẩy tiết kiệm **3,619.48 USD/tháng** (TV1: 469.48, TV2: 3,150) |
+
+Kịch bản và 7 câu hỏi đáp (AZ sập lúc 10 giờ, scale ngoài giờ, chi phí egress/NAT/WAF, 1 hay 2 NAT, GKE so với Cloud Run, 1 FTE và gói support, nguồn giá) nằm ở [KICH_BAN_PITCHING_TV1.md](KICH_BAN_PITCHING_TV1.md).
 
 ---
 
-## 6. Việc còn lại và phụ thuộc
+## 6. Lưu ý cho nhóm
 
-| # | Việc | Ai | Ghi chú |
-|---|---|---|---|
-| 1 | Chốt bảng sizing (RPS, token, GB) | TV2 | Nếu khác giả định ở mục 4.2, sửa khối `S` trong `build_baogia.js` rồi chạy lại |
-| 2 | Điền 17 dòng báo giá (component, chi phí, bằng chứng) | TV2, TV3, TV4 | Điền thẳng trong Excel hoặc vào mảng `TEAM_ROWS` |
-| 3 | Chụp ảnh bằng chứng E01–E13 dán vào `BangChung` (ảnh phải thấy tên dịch vụ, SKU, region, đơn giá) | TV1 | Link đã có, chỉ còn chụp ảnh |
-| 4 | Chạy `check_baogia.js` và validator trên web đến khi **ĐẠT**, sau đó đổi tên file `Gxx` thành mã nhóm | TV1 | |
-| 5 | Điền `TOTAL`, USD/DAU, top 5 hạng mục vào Slide 11 | TV1 | Phải khớp 100% với dòng `TOTAL` |
-| 6 | Xác nhận các chỗ sửa trong module của mình (mục 3.3) | TV2, TV4 | |
-| 7 | Nếu TV4 đổi số node sandbox, cập nhật `sandboxNodesForNat` | TV4 → TV1 | Ảnh hưởng dòng Cloud NAT |
+1. **Không chạy lại `generate_baogia.py`** vì nó sẽ ghi đè các dòng TV1. Muốn sửa dòng của mình thì sửa [baogia/team_rows.json](baogia/team_rows.json), rồi chạy `node baogia/build_baogia.js`, `node baogia/check_baogia.js G03_baogia.xlsx` và `node slides/gen_diagrams.js` để Slide 11 khớp lại.
+2. **Kiến trúc và báo giá đang lệch nhau ở 2 chỗ (TV2 xử lý):** dòng `gateway` ghi "2 container Cloud Run", nhưng sơ đồ và Terraform đặt LLM Gateway trong GKE. Tài liệu ghi "Gemini 3.8 Flash" cần đối chiếu với tên model thật trên trang giá Vertex AI.
+3. **TV4:** Terraform đặt sandbox pool `min_node_count = 1` mỗi zone (3 node chạy 24/7), trong khi báo giá tính 2 node × 2 AZ × 220 giờ. Cần thống nhất một trong hai.
+4. **Ảnh chụp bằng chứng:** sheet `BangChung` đã có link chính thức và cột E để dán ảnh chụp màn hình. Nên dán ảnh cho các mã E16–E28 trước khi nộp.
 
 ---
 
 ## 7. Cách chạy lại
 
 ```bash
-# Terraform
 cd terraform && terraform init -backend=false && terraform validate
-
-# Báo giá: sinh file và kiểm tra (Node.js 18+)
-cd baogia && npm install
-node build_baogia.js          # tạo Gxx_baogia.xlsx
-node check_baogia.js Gxx_baogia.xlsx
-
-# Sơ đồ slide
-cd slides && npm install && node gen_diagrams.js
+cd ../baogia && npm install && node build_baogia.js && node check_baogia.js ../G03_baogia.xlsx
+cd ../slides && npm install && node gen_diagrams.js
 ```

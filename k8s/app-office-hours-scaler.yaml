@@ -1,0 +1,79 @@
+# ==============================================================================
+# Scale app theo giờ hành chính (TV1 - Platform). Đi kèm node pool app trong terraform/modules/gke:
+#   07:45 T2-T6: nâng mọi Deployment có nhãn vbot.io/office-hours=true lên 3 replica.
+#                Các Deployment này khai báo topologySpreadConstraints theo
+#                topology.kubernetes.io/zone, nên cluster autoscaler bật node ở cả 3 zone (H7).
+#   18:15 T2-T6: hạ về 1 replica -> autoscaler co node pool về total_min_nodes = 1.
+# Áp dụng: kubectl apply -f k8s/app-office-hours-scaler.yaml
+# ==============================================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: office-hours-scaler
+  namespace: vbot-prod
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: office-hours-scaler
+  namespace: vbot-prod
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "deployments/scale"]
+    verbs: ["get", "list", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: office-hours-scaler
+  namespace: vbot-prod
+subjects:
+  - kind: ServiceAccount
+    name: office-hours-scaler
+    namespace: vbot-prod
+roleRef:
+  kind: Role
+  name: office-hours-scaler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scale-up-office-hours
+  namespace: vbot-prod
+spec:
+  schedule: "45 7 * * 1-5"
+  timeZone: "Asia/Ho_Chi_Minh"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: office-hours-scaler
+          restartPolicy: OnFailure
+          containers:
+            - name: kubectl
+              image: bitnami/kubectl:1.30
+              command: ["kubectl", "scale", "deployment", "-n", "vbot-prod", "-l", "vbot.io/office-hours=true", "--replicas=3"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scale-down-after-hours
+  namespace: vbot-prod
+spec:
+  schedule: "15 18 * * 1-5"
+  timeZone: "Asia/Ho_Chi_Minh"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: office-hours-scaler
+          restartPolicy: OnFailure
+          containers:
+            - name: kubectl
+              image: bitnami/kubectl:1.30
+              command: ["kubectl", "scale", "deployment", "-n", "vbot-prod", "-l", "vbot.io/office-hours=true", "--replicas=1"]
