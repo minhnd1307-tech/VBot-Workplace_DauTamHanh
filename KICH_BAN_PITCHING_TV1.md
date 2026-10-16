@@ -25,9 +25,9 @@ Mọi con số ở đây khớp với `G03_baogia.xlsx` (validator ĐẠT) và b
 ## Đoạn 2 [06:00 – 07:00]: Slide 11, chi phí và kết luận
 
 ### [06:00 – 06:35] Slide 11: Tổng chi phí (35 giây)
-> "Tổng chi phí là **11.218,97 USD mỗi tháng, tức 5,61 USD cho mỗi người dùng**. Con số này khớp dòng TOTAL trong file báo giá và đã qua công cụ kiểm tra.
-> Ba khoản lớn nhất là nhân sự vận hành 3.500 USD, token LLM 3.369 USD, và SSO kèm MFA 2.000 USD. Riêng phần hạ tầng compute, mạng và LB chỉ khoảng **420 USD**.
-> Đòn bẩy tiết kiệm: routing 85% tác vụ sang Gemini Flash và Context Caching giảm khoảng **3.150 USD**. Phía hạ tầng, autoscale theo giờ hành chính, cam kết 1 năm cho node nền và staging chạy Spot trên chung cluster giảm thêm **469 USD**. Tổng cộng khoảng **3.600 USD mỗi tháng**."
+> "Tổng chi phí là **11.260,64 USD mỗi tháng, tức 5,63 USD cho mỗi người dùng**. Con số này khớp dòng TOTAL trong file báo giá và đã qua công cụ kiểm tra.
+> Các khoản lớn nhất là nhân sự vận hành 3.500 USD, token LLM 3.369 USD, SSO kèm MFA 2.000 USD, và cơ sở dữ liệu 546 USD. Riêng phần hạ tầng compute, mạng và LB chỉ khoảng **420 USD**.
+> Đòn bẩy tiết kiệm: routing 85% tác vụ sang Gemini Flash và Context Caching giảm khoảng **3.150 USD**. Phía hạ tầng, autoscale theo giờ hành chính, cam kết 1 năm cho node nền và staging chạy Spot trên chung cluster giảm thêm **469 USD**. Tầng dữ liệu tối ưu lifecycle Nearline và pgvector tiết kiệm thêm **323 USD**. Tổng cộng tiết kiệm khoảng **3.940 USD mỗi tháng**."
 
 ### [06:35 – 07:00] Mở rộng và kết luận (25 giây)
 > "Khi DAU tăng gấp đôi, phần cố định gồm GKE, LB, WAF và nhân sự giữ nguyên. Node app lúc cao điểm tăng từ 4 lên khoảng 7, phần hạ tầng tăng khoảng **210 USD**. Khoản tăng lớn nhất là token, tăng tuyến tính, và được chặn bằng quota theo user cùng cảnh báo ngân sách.
@@ -53,7 +53,7 @@ Mọi con số ở đây khớp với `G03_baogia.xlsx` (validator ĐẠT) và b
 > Có 3 lý do. Sandbox cần node pool gVisor riêng có NetworkPolicy chặn egress, và việc này dễ kiểm soát trên GKE. Agent chạy nền tới 10 phút. Ở 3,5 RPS lúc cao điểm, 4 node e2-standard-4 cho chi phí ổn định, có thể mua cam kết 1 năm. Cloud Run hợp cho tải thất thường, còn tải giờ hành chính ở đây đều và đoán trước được.
 
 **6. "Vì sao chỉ 1 FTE vận hành, và chọn Standard Support?"**
-> Hạ tầng hầu hết là dịch vụ managed (GKE, Cloud SQL, Redis, LB) và được dựng hoàn toàn bằng Terraform, nên 1 SRE/MLOps làm việc giờ hành chính kiêm on-call là đủ. Standard Support tính 3% chi phí cloud, tức 214,98 USD. Lên Enhanced Support (10%) sẽ thêm khoảng 500 USD mà không cải thiện RTO 4 giờ, vì failover đã tự động.
+> Hạ tầng hầu hết là dịch vụ managed (GKE, Cloud SQL, Redis, LB) và được dựng hoàn toàn bằng Terraform, nên 1 SRE/MLOps làm việc giờ hành chính kiêm on-call là đủ. Standard Support tính 3% chi phí cloud, tức 216,19 USD. Lên Enhanced Support (10%) sẽ thêm khoảng 500 USD mà không cải thiện RTO 4 giờ, vì failover đã tự động.
 
 **7. "Giá trong báo giá lấy ở đâu?"**
 > Từ Cloud Billing Catalog API của Google, giá niêm yết công khai ngày 2026-10-16, region asia-southeast1. Mỗi dòng ghi SKU ID, và sheet BangChung có link tới trang giá chính thức. Không dùng free tier hay credit nào.

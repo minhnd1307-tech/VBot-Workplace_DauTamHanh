@@ -19,11 +19,11 @@
 | Terraform module `network` và `gke` chạy `terraform validate` hợp lệ | ✅ `Success! The configuration is valid.` (validate ở root, gồm cả 5 module) |
 | Root Terraform (`main.tf`, `variables.tf`, `outputs.tf`, `terraform.tfvars.example`) | ✅ |
 | Gom báo giá của 4 thành viên vào `G03_baogia.xlsx` và validator báo **ĐẠT** | ✅ **ĐẠT, 0 lỗi, 0 cảnh báo** |
-| Chốt TOTAL đồng bộ với Slide 11 | ✅ **11,218.97 USD/tháng**, tức **5.61 USD/DAU**. Hình Slide 11 được sinh trực tiếp từ file báo giá |
+| Chốt TOTAL đồng bộ với Slide 11 | ✅ **11,260.64 USD/tháng**, tức **5.63 USD/DAU**. Hình Slide 11 được sinh trực tiếp từ file báo giá |
 | Sơ đồ kiến trúc thể hiện Multi-AZ (3 zone) và đủ mã component | ✅ Slide 2 |
 | Slide 2, 3, 11 và phần mở đầu, kết luận khi thuyết trình | ✅ Hình, nội dung và kịch bản 2 phút 15 giây kèm 7 câu hỏi đáp dự phòng |
 
-**Chi phí phần TV1:** compute **284.84**, network **103.19**, load_balancer **31.75**, cicd **18.84**; ops_labor **3,500**, licenses **214.98**, contingency **338.10** (USD/tháng).
+**Chi phí phần TV1:** compute **284.84**, network **103.19**, load_balancer **31.75**, cicd **18.84**; ops_labor **3,500**, licenses **216.19**, contingency **338.10** (USD/tháng).
 
 ---
 
@@ -95,10 +95,10 @@ cd terraform && terraform init -backend=false && terraform validate   # Success!
 | load_balancer | 30.25 | Data processing ở Singapore là 0.009 USD/GB, không phải 0.008 | **31.75** |
 | network | 150.70 | "2 NAT × 730 giờ × 0.045": 0.045 là giá mỗi GB, giá gateway là 0.0014 USD/VM-giờ | **103.19** |
 | cicd | 8.60 | Cloud Build e2-standard-2 là 0.006 USD/phút, không phải 0.003 | **18.84** |
-| licenses | 500.00 | Enhanced Support tính 10% chi phí (khoảng 700), con số 500 không khớp bằng chứng | **214.98** (Standard, 3%) |
+| licenses | 500.00 | Enhanced Support tính 10% chi phí (khoảng 700), con số 500 không khớp bằng chứng | **216.19** (Standard, 3%) |
 | contingency | 500.00 | "5% tổng" không khớp phép tính | **338.10** (10% × llm + embedding) |
 
-Đề trừ 5 điểm cho mỗi dòng có bằng chứng không khớp đơn giá. Sau khi chỉnh, **TOTAL giảm từ 11,656.65 xuống 11,218.97 USD (−437.68)**.
+Đề trừ 5 điểm cho mỗi dòng có bằng chứng không khớp đơn giá. Sau khi TV1 và TV3 chuẩn hóa đơn giá theo SKU thật, **TOTAL chốt ở 11,260.64 USD (5.63 USD/DAU)**.
 
 ### 4.2 Sizing dùng cho các dòng TV1 (theo bảng bàn giao của TV2)
 
@@ -132,7 +132,7 @@ cd terraform && terraform init -backend=false && terraform validate   # Success!
 | cicd | Cloud Build | 2.640 phút × 0.006 | 15.84 |
 | cicd | Artifact Registry | 30 GB × 0.10 | 3.00 |
 | ops_labor | 1 FTE SRE/MLOps | 3,500 | 3,500.00 |
-| licenses | Standard Support | max(29; 3% × 7,165.89) (công thức Excel) | 214.98 |
+| licenses | Standard Support | max(29; 3% × 7,206.35) (công thức Excel) | 216.19 |
 | contingency | Dự phòng token | 10% × (3,369.01 + 12) (công thức Excel) | 338.10 |
 
 Toàn bộ đơn giá lấy từ **Cloud Billing Catalog API** của Google, mỗi dòng ghi SKU ID. Bằng chứng TV1 là E16–E28 trong sheet `BangChung`, đánh số tiếp sau E01–E13 của nhóm. Không dùng free tier hay credit.
@@ -145,7 +145,7 @@ Toàn bộ đơn giá lấy từ **Cloud Billing Catalog API** của Google, m�
 |---|---|
 | 2: Kiến trúc tổng thể | Đủ 19 component bắt buộc, mỗi hộp ghi mã; 3 zone; VPC, Private Service Access, Private Google Access, NAT → SaaS |
 | 3: Luồng một request | 10 lane, 12 bước: SSO → WAF/LB → RBAC → guardrail/DLP → RAG lọc ACL → connector với OAuth của user → routing LLM → stream → sandbox gVisor → người dùng xác nhận |
-| 11: Chi phí | **11,218.97 USD · 5.61 USD/DAU**, top 5 hạng mục, 6 đòn bẩy tiết kiệm **3,619.48 USD/tháng** (TV1: 469.48, TV2: 3,150) |
+| 11: Chi phí | **11,260.64 USD · 5.63 USD/DAU**, top 5 hạng mục, 6 đòn bẩy tiết kiệm **3,619.48 USD/tháng** (TV1: 469.48, TV2: 3,150) |
 
 Kịch bản và 7 câu hỏi đáp (AZ sập lúc 10 giờ, scale ngoài giờ, chi phí egress/NAT/WAF, 1 hay 2 NAT, GKE so với Cloud Run, 1 FTE và gói support, nguồn giá) nằm ở [KICH_BAN_PITCHING_TV1.md](KICH_BAN_PITCHING_TV1.md).
 

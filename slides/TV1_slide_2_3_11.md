@@ -31,18 +31,18 @@ Lời nói đầy đủ cho từng slide nằm ở [../KICH_BAN_PITCHING_TV1.md]
 
 ## Slide 11: Chi phí hằng tháng
 
-**Tiêu đề:** Chi phí hằng tháng: 11,218.97 USD · 5.61 USD/DAU
+**Tiêu đề:** Chi phí hằng tháng: 11,260.64 USD · 5.63 USD/DAU
 
 **5 hạng mục lớn nhất** (theo `G03_baogia.xlsx`):
 
 | # | Component | USD/tháng | % tổng |
 |---|---|---|---|
-| 1 | ops_labor | 3,500.00 | 31.2% |
-| 2 | llm | 3,369.01 | 30.0% |
+| 1 | ops_labor | 3,500.00 | 31.1% |
+| 2 | llm | 3,369.01 | 29.9% |
 | 3 | authn | 2,000.00 | 17.8% |
-| 4 | database | 365.40 | 3.3% |
+| 4 | database | 545.82 | 4.8% |
 | 5 | contingency | 338.10 | 3.0% |
-| | 17 component còn lại | 1,646.46 | 14.7% |
+| | 17 component còn lại | 1,507.71 | 13.4% |
 
 **Đòn bẩy tiết kiệm (USD/tháng):**
 
