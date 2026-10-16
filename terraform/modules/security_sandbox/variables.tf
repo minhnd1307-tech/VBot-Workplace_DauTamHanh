@@ -28,12 +28,18 @@ variable "sandbox_machine_type" {
 
 variable "sandbox_initial_nodes" {
   type        = number
-  description = "So node sandbox ban dau moi zone"
-  default     = 1
+  description = "So node sandbox ban dau moi zone (khoi dong 0 node, co ve 0 ngoai gio)"
+  default     = 0
+}
+
+variable "sandbox_min_nodes" {
+  type        = number
+  description = "So node sandbox toi thieu moi zone (scale ve 0 khi khong co job de tiet kiem)"
+  default     = 0
 }
 
 variable "sandbox_max_nodes" {
   type        = number
   description = "So node sandbox toi da moi zone"
-  default     = 3
+  default     = 2
 }

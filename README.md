@@ -46,7 +46,18 @@ Thành viên 2 phụ trách **"Trái tim"** của hệ thống: Bài toán Sizin
 
 ---
 
-## 3. MÃ NGUỒN TERRAFORM INFRASTRUCTURE AS CODE (IaC)
+## 3. BỘ SẢN PHẨM CÁC THÀNH VIÊN TRONG NHÓM
+
+| Thành viên | Vai trò | Sản phẩm chính | Báo cáo cá nhân |
+|---|---|---|---|
+| **TV 1 (Nguyen Van Tai)** | Lead Architect & Platform | Module Terraform `network`, `gke`; file báo giá [G03_baogia.xlsx](G03_baogia.xlsx); Slide 2, 3, 11; kịch bản [KICH_BAN_PITCHING_TV1.md](KICH_BAN_PITCHING_TV1.md) | [2A202603004_NguyenVanTai.md](2A202603004_NguyenVanTai.md) |
+| **TV 2 (Nguyen Duc Minh)** | AI & Model Specialist | Sizing tải lượng 2.000 DAU, Routing 5 cấp, Eval Gate H8, [ai_gateway_service.py](ai_gateway_service.py), Slide 1, 4, 5, [KICH_BAN_PITCHING_TV2.md](KICH_BAN_PITCHING_TV2.md) | [SLIDE_TV2_NOI_DUNG.md](SLIDE_TV2_NOI_DUNG.md) |
+| **TV 3 (Lam Hoang Phuc)** | Data & Workspace | Module Terraform `data` (Cloud SQL HA pgvector, GCS, Redis HA, Tasks), kiểm thử RLS [run_isolation_test.sh](tv3_data/run_isolation_test.sh) (7/7 PASS), Slide 6, 7, 12 | [TV3_LamHoangPhuc.md](TV3_LamHoangPhuc.md) |
+| **TV 4 (Nguyen Huy Hung)** | Security, Sandbox & DR | Module Terraform `security_sandbox` (gVisor, KMS, DLP), kiểm thử [run_security_tests.sh](tv4_security/run_security_tests.sh) (9/9 PASS), Slide 8, 9, 10, [KICH_BAN_PITCHING_TV4.md](KICH_BAN_PITCHING_TV4.md) | [TV4_NguyenHuyHung.md](TV4_NguyenHuyHung.md) |
+
+---
+
+## 4. MÃ NGUỒN TERRAFORM INFRASTRUCTURE AS CODE (IaC)
 Toàn bộ hạ tầng GCP được mã hóa bằng Terraform chuẩn mô-đun hóa tại thư mục [terraform/](terraform/):
 * `terraform/modules/ai_gateway/`: (TV2) Kích hoạt Vertex AI APIs, Artifact Registry, Monitoring Alert Policy (H8), Audit Log Bucket 12 tháng (H5), Vertex AI Private Endpoint.
 * `terraform/modules/network/`: (TV1) VPC Custom, Private Subnets, Cloud NAT Multi-AZ, Cloud Armor WAF.
@@ -54,29 +65,34 @@ Toàn bộ hạ tầng GCP được mã hóa bằng Terraform chuẩn mô-đun h
 * `terraform/modules/data/`: (TV3) Cloud SQL HA PG16 + pgvector, GCS Workspaces (CMEK, prefix), Redis HA, Cloud Tasks, Pub/Sub + Scheduler cho connectors.
 * `terraform/modules/security_sandbox/`: (TV4) GKE Sandbox gVisor Node Pool, Cloud KMS, Secret Manager, Cloud DLP.
 
-**Kiểm tra tính hợp lệ cú pháp:**
-```bash
-cd terraform
-terraform init -backend=false
-terraform validate
-# Kết quả: Success! The configuration is valid.
-```
-
 ---
 
-## 4. HƯỚNG DẪN KIỂM TRA NHANH (QUICK START)
+## 5. HƯỚNG DẪN KIỂM TRA NHANH (QUICK START)
 
 1. **Kiểm tra file Báo giá qua bộ kiểm tra:**
    ```bash
-   node validate_baogia.mjs
-   # Output: Verdict OK: >>> ĐẠT (XANH LÁ) <<< (0 errors, 0 warnings)
+   cd baogia && npm install && node check_baogia.js ../G03_baogia.xlsx
+   # Output: ==> DAT (TOTAL: 11260.64 USD, 5.63 USD/DAU)
    ```
-2. **Chạy bài kiểm tra Chất lượng Benchmark (H8):**
+2. **Chạy bài kiểm tra Chất lượng Benchmark (H8 - TV2):**
    ```bash
    python eval_benchmark.py
    # Output: OVERALL QUALITY RATIO: 97.50% -> PASSED
    ```
-3. **Thực thi AI Gateway với Vertex AI LIVE:**
+3. **Chạy bài kiểm tra Cô lập Dữ liệu (H3 - TV3):**
    ```bash
-   python ai_gateway_service.py
+   bash tv3_data/run_isolation_test.sh
+   # Output: 7/7 PASSED
+   ```
+4. **Chạy bài kiểm tra Bảo mật Sandbox & Độ tin cậy (H2, H3, H4, H5, H7 - TV4):**
+   ```bash
+   bash tv4_security/run_security_tests.sh
+   # Output: 9/9 PASS (100.0%) -> TOÀN BỘ CƠ CHẾ ĐẠT CHUẨN
+   ```
+5. **Sinh lại toàn bộ Sơ đồ Slide (16:9 SVG + PNG):**
+   ```bash
+   cd slides && npm install
+   node gen_diagrams.js      # Slide 2, 3, 11 (TV1)
+   node gen_tv3_diagrams.js  # Slide 6, 7 (TV3)
+   node gen_tv4_diagrams.js  # Slide 8, 9, 10 (TV4)
    ```

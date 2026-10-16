@@ -24,7 +24,7 @@ resource "google_container_node_pool" "sandbox_pool" {
   node_count = var.sandbox_initial_nodes
 
   autoscaling {
-    min_node_count = 1
+    min_node_count = var.sandbox_min_nodes
     max_node_count = var.sandbox_max_nodes
   }
 
