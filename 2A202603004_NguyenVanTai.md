@@ -90,8 +90,10 @@ Trước khi sửa, `terraform validate` ở root **lỗi 3 chỗ**, đều nằ
 | File | Lỗi | Sửa |
 |---|---|---|
 | `modules/ai_gateway/main.tf` (TV2) | `toset(locals.services)` → "undeclared resource" | Đổi thành `local.services` |
-| `modules/security_sandbox/main.tf` (TV4) | `sandbox_config` (gVisor) **không có** trong provider `google`, kể cả bản 6.50 | Thêm `provider = google-beta` cho `sandbox_pool`, thêm `versions.tf`, root truyền `providers` |
-| `modules/security_sandbox/main.tf` (TV4) | DLP `limits` thiếu tham số bắt buộc `max_findings_per_item` | Thêm `max_findings_per_item = 10` |
+| `modules/security_sandbox/main.tf` (TV4) | `sandbox_config` (gVisor) **không có** trong provider `google`, kể cả bản 6.50 | Thêm `provider = google-beta` cho `sandbox_pool`, khai báo `required_providers` trong module, root truyền `providers` |
+| `modules/security_sandbox/main.tf` (TV4) | DLP `limits` thiếu tham số bắt buộc `max_findings_per_item` | Thêm `max_findings_per_item = 100` |
+
+> Khi merge vào `main`, commit `4351ac4` của TV2 đã tự sửa đúng 3 lỗi trên. Lúc gộp, mình giữ bản của TV2 cho `security_sandbox` và `ai_gateway`. Ở root, mình giữ provider `~> 6.0` và bỏ khai báo `google-beta 5.20` bị lặp. Sau merge, `terraform validate` vẫn **Success**.
 | `variables.tf` (root) | Mật khẩu DB viết cứng trong `default` | Bỏ default. Truyền qua `terraform.tfvars` (đã gitignore) hoặc `TF_VAR_db_password` |
 
 Còn lại: `terraform fmt -check` báo `modules/ai_gateway/main.tf` lệch căn lề. TV2 chạy `terraform fmt` là xong. Module `data` (TV3) vẫn có `db_password` mặc định trong code, nên bỏ.

@@ -12,3 +12,9 @@ output "budget_alert_policy_id" {
   value       = google_monitoring_alert_policy.llm_budget_alert.id
   description = "Cloud Monitoring Alert Policy ID"
 }
+
+output "ai_gateway_endpoint_id" {
+  value       = google_vertex_ai_endpoint.ai_gateway_endpoint.id
+  description = "Vertex AI Private Endpoint ID for AI Gateway"
+}
+

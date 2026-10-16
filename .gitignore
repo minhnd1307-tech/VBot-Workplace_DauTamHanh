@@ -5,8 +5,16 @@
 terraform.tfvars
 crash.log
 
-# Node (cong cu bao gia)
-node_modules/
+# Node
+**/node_modules
+
+# Python
+__pycache__/
+*.pyc
+
+# Secrets, logs
+.env
+*.log
 
 # Excel lock file
 ~$*.xlsx

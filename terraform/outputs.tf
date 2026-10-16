@@ -61,3 +61,9 @@ output "gke_node_service_account" {
   value       = module.gke.node_service_account_email
   description = "Service account quyen toi thieu cua GKE node"
 }
+
+output "ai_gateway_endpoint" {
+  value       = module.ai_gateway.ai_gateway_endpoint_id
+  description = "Vertex AI Private Endpoint ID cho AI Gateway"
+}
+

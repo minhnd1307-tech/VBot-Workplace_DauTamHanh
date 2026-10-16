@@ -3,10 +3,21 @@
 # Phụ trách: Thành viên 4 (Security, Sandbox, Governance & Reliability)
 # ==============================================================================
 
+terraform {
+  required_providers {
+    google = {
+      source = "hashicorp/google"
+    }
+    google-beta = {
+      source = "hashicorp/google-beta"
+    }
+  }
+}
+
 # 1. GKE SANDBOX NODE POOL (gVisor) - Thỏa mãn Ràng buộc cứng H3
 # Mỗi container chạy code của Agent được cô lập tuyệt đối ở tầng kernel bằng gVisor
 resource "google_container_node_pool" "sandbox_pool" {
-  provider   = google-beta # sandbox_config (gVisor) chi co trong provider google-beta
+  provider   = google-beta
   name       = "${var.project_prefix}-sandbox-pool"
   location   = var.region
   cluster    = var.cluster_name
@@ -118,7 +129,7 @@ resource "google_data_loss_prevention_inspect_template" "pii_inspect_template" {
     min_likelihood = "LIKELY"
 
     limits {
-      max_findings_per_item    = 10
+      max_findings_per_item    = 100
       max_findings_per_request = 50
     }
   }

@@ -6,7 +6,7 @@
 # 1. KÍCH HOẠT CÁC API DỊCH VỤ CỐT LÕI TRÊN GOOGLE CLOUD
 locals {
   services = [
-    "aiplatform.googleapis.com",        # Vertex AI (Gemini 1.5 Flash, Gemini 1.5 Pro, Imagen 3, Embeddings)
+    "aiplatform.googleapis.com",        # Vertex AI (Gemini 3.8 Flash, Gemini Pro, Imagen 3, text-embedding-004)
     "dlp.googleapis.com",               # Cloud Sensitive Data Protection (DLP API)
     "cloudkms.googleapis.com",          # Cloud KMS
     "secretmanager.googleapis.com",     # Secret Manager
@@ -70,3 +70,15 @@ resource "google_logging_project_bucket_config" "audit_log_bucket" {
   retention_days = 365 # LƯU TRỮ ĐÚNG 365 NGÀY (12 THÁNG) THEO RÀNG BUỘC CỨNG H5
   description    = "Luu tru toan bo Audit Log truy cap va hanh vi cua Agent trong 12 thang"
 }
+
+# 5. VERTEX AI ENDPOINT - Private Endpoint phục vụ AI Gateway routing và Vertex AI model deployment
+resource "google_vertex_ai_endpoint" "ai_gateway_endpoint" {
+  depends_on   = [google_project_service.enabled_apis]
+  project      = var.project_id
+  name         = "${var.project_prefix}-ai-gateway-endpoint"
+  display_name = "VBot AI Gateway Vertex AI Private Endpoint"
+  description  = "Private endpoint cho LLM Gateway routing Gemini 3.8 Flash, Gemini Pro va Embeddings"
+  location     = var.region
+  region       = var.region
+}
+
