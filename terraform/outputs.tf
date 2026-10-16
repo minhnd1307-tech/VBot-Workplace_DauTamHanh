@@ -46,3 +46,18 @@ output "artifact_registry_repo" {
   value       = module.ai_gateway.artifact_registry_repo_id
   description = "Artifact Registry Repository cho CI/CD Container Images"
 }
+
+output "lb_ip_address" {
+  value       = module.network.lb_ip_address
+  description = "IP anycast cua Global External Application Load Balancer"
+}
+
+output "waf_policy_name" {
+  value       = module.network.waf_policy_name
+  description = "Ten Cloud Armor policy gan vao backend cua LB"
+}
+
+output "gke_node_service_account" {
+  value       = module.gke.node_service_account_email
+  description = "Service account quyen toi thieu cua GKE node"
+}

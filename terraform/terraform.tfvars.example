@@ -1,4 +1,17 @@
 project_id     = "your-gcp-project-id"
 project_prefix = "vbot-prod"
 region         = "asia-southeast1" # Singapore
-db_password    = "ChangeMeStrongPassword2026!"
+zones          = ["asia-southeast1-a", "asia-southeast1-b", "asia-southeast1-c"]
+domains        = ["vbot.your-company.vn"]
+
+# Chi VPN cong ty / CI runner duoc goi Kubernetes API
+master_authorized_cidrs = [
+  { cidr_block = "203.0.113.0/24", display_name = "corp-vpn" },
+]
+
+# Sizing node pool ung dung (moi zone): ngoai gio 1 x 3 = 3 node, cao diem 2 x 3 = 6 node
+app_node_machine_type  = "e2-standard-4"
+app_min_nodes_per_zone = 1
+app_max_nodes_per_zone = 2
+
+db_password = "ChangeMeStrongPassword2026!"

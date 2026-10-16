@@ -1,0 +1,12 @@
+{
+  "name": "vbot-baogia",
+  "private": true,
+  "description": "Sinh va kiem tra file bao gia Gxx_baogia.xlsx (dung dung validator trong vbot-capstone.html)",
+  "scripts": {
+    "build": "node build_baogia.js",
+    "check": "node check_baogia.js Gxx_baogia.xlsx"
+  },
+  "dependencies": {
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}

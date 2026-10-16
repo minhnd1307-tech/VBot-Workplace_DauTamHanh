@@ -15,6 +15,12 @@ variable "region" {
   default     = "asia-southeast1"
 }
 
+variable "zones" {
+  type        = list(string)
+  description = "3 Availability Zone cua region (Multi-AZ - H7)"
+  default     = ["asia-southeast1-a", "asia-southeast1-b", "asia-southeast1-c"]
+}
+
 variable "vpc_name" {
   type        = string
   description = "Ten VPC"
@@ -25,10 +31,37 @@ variable "subnet_name" {
   description = "Ten Subnet"
 }
 
+variable "pod_range_name" {
+  type        = string
+  description = "Ten secondary range cho Pods"
+  default     = "pod-ranges"
+}
+
+variable "service_range_name" {
+  type        = string
+  description = "Ten secondary range cho Services"
+  default     = "service-ranges"
+}
+
 variable "master_ipv4_cidr" {
   type        = string
-  description = "CIDR block cho GKE Master control plane"
+  description = "CIDR block cho GKE control plane"
   default     = "172.16.0.0/28"
+}
+
+variable "master_authorized_cidrs" {
+  type = list(object({
+    cidr_block   = string
+    display_name = string
+  }))
+  description = "Dai IP duoc goi Kubernetes API (VPN cong ty, CI runner). De trong = khong gioi han"
+  default     = []
+}
+
+variable "deletion_protection" {
+  type        = bool
+  description = "Chan terraform destroy xoa nham cluster production"
+  default     = true
 }
 
 variable "app_node_machine_type" {
@@ -37,20 +70,32 @@ variable "app_node_machine_type" {
   default     = "e2-standard-4"
 }
 
-variable "initial_node_count" {
+variable "node_disk_size_gb" {
   type        = number
-  description = "So node ban dau moi zone"
-  default     = 1
+  description = "Dung luong boot disk moi node (GB)"
+  default     = 50
 }
 
 variable "min_nodes" {
   type        = number
-  description = "So node toi thieu moi zone (Scale down ban dem)"
+  description = "So node toi thieu MOI ZONE (ngoai gio: 1 x 3 zone = 3 node)"
   default     = 1
 }
 
 variable "max_nodes" {
   type        = number
-  description = "So node toi da moi zone (Scale up gio cao diem)"
-  default     = 3
+  description = "So node toi da MOI ZONE (gio cao diem)"
+  default     = 2
+}
+
+variable "staging_node_machine_type" {
+  type        = string
+  description = "Loai may cho Staging Node Pool (Spot)"
+  default     = "e2-standard-4"
+}
+
+variable "staging_max_nodes" {
+  type        = number
+  description = "So node staging toi da"
+  default     = 1
 }

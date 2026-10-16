@@ -65,7 +65,8 @@ terraform/
    ```bash
    cd terraform
    cp terraform.tfvars.example terraform.tfvars
-   # Điền project_id của bạn vào file terraform.tfvars
+   # Điền project_id và db_password vào file terraform.tfvars (file này đã được .gitignore)
+   # hoặc: export TF_VAR_db_password='...'
    ```
 
 2. **Khởi tạo và kiểm tra cú pháp:**

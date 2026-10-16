@@ -1,0 +1,12 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+crash.log
+
+# Node (cong cu bao gia)
+node_modules/
+
+# Excel lock file
+~$*.xlsx
