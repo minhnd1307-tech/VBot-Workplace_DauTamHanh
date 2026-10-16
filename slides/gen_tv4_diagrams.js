@@ -260,3 +260,4 @@ for (const [name, svg] of Object.entries(files)) {
   }
   console.log('Da ghi ' + name + (Resvg ? '.svg + .png' : '.svg'));
 }
+

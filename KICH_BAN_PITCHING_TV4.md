@@ -56,3 +56,4 @@ Mọi thông số kỹ thuật và số liệu ở đây khớp 100% với mã n
 > 6. `secrets_kms`: 18,06 USD (KMS key rotation + Secret Manager lưu refresh tokens).
 > 7. `authz`: 0,00 USD (Nằm trong pod compute của GKE).
 > Tổng cộng 2.445,86 USD/tháng (~1,22 USD/DAU), tối ưu và minh bạch tới từng SKU."
+

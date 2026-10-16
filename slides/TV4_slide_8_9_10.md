@@ -78,3 +78,4 @@ Lời nói pitching chi tiết khớp khung giờ **04:30 – 06:00** nằm ở 
    * **Automated Daily Backup:** Thực hiện lúc 02:00 sáng, lưu trữ 14 bản sao lưu gần nhất.
    * **Point-In-Time Recovery (PITR):** Lưu giữ Transaction WAL log liên tục 7 ngày, cho phép khôi phục trạng thái database về bất kỳ giây nào trong 7 ngày qua $\to$ **RPO thực tế $\le$ 5 phút** (vượt xa chuẩn đề bài $\le$ 1 giờ).
    * **Kịch bản Thảm họa Vùng (Regional Disaster):** Sao lưu cross-region sang `asia-southeast2` (Jakarta). Toàn bộ hạ tầng được tự động hóa 100% bằng Terraform IaC, dựng lại toàn cụm trong 25 phút + khôi phục DB 20 phút $\to$ **RTO thực tế = 45 phút** (vượt xa chuẩn đề bài $\le$ 4 giờ).
+

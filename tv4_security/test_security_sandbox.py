@@ -232,3 +232,4 @@ class SecurityTestSuite:
 if __name__ == "__main__":
     suite = SecurityTestSuite()
     sys.exit(suite.run_all())
+

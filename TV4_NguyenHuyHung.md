@@ -152,3 +152,4 @@ cd slides && node gen_tv4_diagrams.js
 # 3. Kiểm tra tính hợp lệ của file báo giá
 cd ../baogia && node check_baogia.js ../G03_baogia.xlsx
 ```
+

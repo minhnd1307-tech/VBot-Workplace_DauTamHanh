@@ -8,3 +8,4 @@ echo "  Kiểm tra 5 ràng buộc cứng: H2, H3, H4, H5, H7"
 echo "========================================================================"
 
 python3 "$DIR/test_security_sandbox.py"
+
