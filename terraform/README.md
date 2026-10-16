@@ -30,7 +30,7 @@ terraform/
     │   └── outputs.tf
     │
     ├── data/                  # [Thành viên 3 - Data Specialist]
-    │   ├── main.tf            # Cloud SQL HA (PostgreSQL 15 + pgvector), GCS Workspace, Redis HA, Cloud Tasks
+    │   ├── main.tf            # Cloud SQL HA (PostgreSQL 16 + pgvector, RLS), GCS Workspace, Redis HA, Cloud Tasks
     │   ├── variables.tf
     │   └── outputs.tf
     │

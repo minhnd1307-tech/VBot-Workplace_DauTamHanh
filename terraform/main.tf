@@ -89,5 +89,6 @@ module "data" {
   vpc_id                 = module.network.vpc_id
   private_vpc_connection = module.network.private_vpc_connection
   kms_key_id             = module.security_sandbox.kms_key_id
+  workload_identity_pool = module.gke.workload_identity_pool
   db_password            = var.db_password
 }

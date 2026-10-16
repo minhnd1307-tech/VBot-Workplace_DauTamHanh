@@ -119,7 +119,98 @@ const TV1_CLOUD = [
     S.registryGb * P.registryGbMonth, 'E12; https://cloud.google.com/artifact-registry/pricing'],
 ].map(r => [r[0], r[1], r[2], r2(r[3]), r[4]]);
 
-// ---------- Dong cua TV2/TV3/TV4: chu so huu dien Ghi chu, Chi phi, Bang chung ----------
+// ---------- Dong cua TV3 (connectors, database, vector_db, object_storage, cache_queue) ----------
+// Don gia: Cloud Billing Catalog API ngay 2026-10-16, ban ghi SKU goc o tv3_data/pricing/tv3_skus_2026-10-16.json
+// Sizing chi tiet: TV3_DATA_WORKSPACE_CONNECTORS.md muc 2
+const P3 = {
+  sqlRegVcpu: 0.1156,        // Cloud SQL for PostgreSQL: Regional - vCPU in Singapore (0152-2835-C929)
+  sqlRegRam: 0.0196,         // Cloud SQL for PostgreSQL: Regional - RAM in Singapore (37B4-B2B7-C640)
+  sqlRegSsd: 0.476,          // Cloud SQL for PostgreSQL: Regional - Standard storage in Singapore (83A6-DA61-7797)
+  sqlZonVcpu: 0.0578,        // Zonal - vCPU in Singapore (DE86-B401-E60F)
+  sqlZonRam: 0.0098,         // Zonal - RAM in Singapore (EF83-F6A8-8EA7)
+  sqlZonSsd: 0.238,          // Zonal - Standard storage in Singapore (45B3-606F-EE91)
+  sqlCud1y: 0.75,            // Commitment dollar based v1: Cloud SQL asia-southeast1 1 year = 0.0075/0.01 => tra 75% (B4F3-4753-84D8)
+  gcsStd: 0.020,             // Standard Storage Singapore (76BA-5CAD-4338)
+  gcsNearline: 0.010,        // Nearline Storage Singapore (4453-FEE4-941B)
+  gcsClassA: 0.000005,       // Regional Standard Class A Operations, 0.05 USD/10.000 (4DBF-185F-A415)
+  gcsClassB: 0.0000004,      // Regional Standard Class B Operations, 0.004 USD/10.000 (7870-010B-2763)
+  gcsNearlineClassA: 0.00001,// Regional Nearline Class A Operations (9559-D2EC-1D33), lifecycle chuyen lop
+  gcsNearlineRetrieval: 0.01,// Nearline Data Retrieval (8D92-97F6-DDF3)
+  redisStdM2: 0.075,         // Redis Capacity Standard M2 Singapore, 5-10 GB (A728-AD0D-27B4)
+  redisStdM1: 0.114,         // Redis Capacity Standard M1 Singapore, 1-4 GB (ABC0-67FF-FCAD), de so sanh
+  tasksPerMillion: 0.40,     // Cloud Tasks Operations (378A-D762-1F74)
+  pubsubPerTiB: 40,          // Pub/Sub Message Delivery Basic (027D-B6C7-CCA2)
+  schedulerJobMonth: 0.10,   // Cloud Scheduler Jobs (A5D6-43A2-28A7): 0.003225806 USD/job-ngay x 31
+};
+const S3 = {
+  dbVcpu: 4, dbRamGb: 16, dbSsdGb: 200,          // db-custom-4-16384 regional HA
+  stgVcpu: 1, stgRamGb: 3.75, stgSsdGb: 20,      // db-custom-1-3840 zonal, chay 220 gio
+  gcsStdGb: 1050,           // 3 thang gan nhat x 350 GB moi/thang (Standard <= 90 ngay)
+  gcsNearlineGb: 3150,      // thang 4-12 x 350 GB (Nearline); tong 4.200 GB = 2,1 GB/user < quota 10 GB
+  gcsClassAM: 1.32,         // trieu thao tac ghi/list: 2.000 user x 30/ngay x 22 ngay
+  gcsClassBM: 4.4,          // trieu thao tac doc: 2.000 x 100/ngay x 22
+  gcsLifecycleObjK: 440,    // nghin object chuyen Nearline/thang (2.000 x 10 object/ngay x 22)
+  gcsRetrievalGb: 160,      // ~5% du lieu Nearline duoc mo lai moi thang
+  gcsStagingGb: 50,
+  redisGb: 5,
+  tasksOpsM: 4.2,           // trieu operation Cloud Tasks (agent 1,58 + sync theo webhook 2,2 + delta tick 0,35, lam tron)
+  pubsubGb: 4.4,            // 2,2 trieu event x 1 KB (muc tinh toi thieu) x (publish + delivery)
+  syncJobs: 5, stagingDbJobs: 2,
+  ingestGbMonth: 15, ingestClassAK: 150,
+};
+const sqlRegHour = S3.dbVcpu * P3.sqlRegVcpu + S3.dbRamGb * P3.sqlRegRam;
+const sqlStgHour = S3.stgVcpu * P3.sqlZonVcpu + S3.stgRamGb * P3.sqlZonRam;
+const TV3_ROWS = [
+  ['connectors', 'Gọi API SaaS (Gmail, Drive, Calendar, Outlook, OneDrive, SharePoint, Teams, Notion, Jira, Confluence) bằng OAuth ủy nhiệm của từng user',
+    'Phí gọi API của Google Workspace, Microsoft Graph, Notion, Jira, Confluence nằm trong license SaaS tập đoàn đang trả; connector worker chạy trên GKE nằm trong dòng compute, lưu lượng ra SaaS qua Cloud NAT nằm trong dòng network. Rate limit từng SaaS theo link bằng chứng; ~20.000 lượt gọi/ngày',
+    0, 'https://developers.google.com/workspace/gmail/api/reference/quota; https://learn.microsoft.com/en-us/graph/throttling; https://developer.atlassian.com/cloud/jira/platform/rate-limiting/'],
+  ['connectors', 'Pub/Sub nhận thông báo thay đổi (Gmail/Drive watch, webhook M365/Jira/Confluence/Notion) cho đồng bộ index theo sự kiện',
+    `Pub/Sub Message Delivery, SKU 027D-B6C7-CCA2: 2,2 triệu event/tháng × 1 KB × 2 (publish + delivery) = ${S3.pubsubGb} GB = ${f(S3.pubsubGb / 1024, 4)} TiB × ${P3.pubsubPerTiB} USD/TiB, cộng lưu 1 ngày ~0,1 GB × 0,27 USD (F9EB-D3E1-ABDF). Tính toàn bộ theo đơn giá niêm yết`,
+    S3.pubsubGb / 1024 * P3.pubsubPerTiB + 0.1 * 0.27, 'E35; https://cloud.google.com/pubsub/pricing'],
+  ['connectors', 'Cloud Scheduler: delta sync 15 phút/lần trong giờ hành chính cho 5 nhóm connector',
+    `Cloud Scheduler Jobs, SKU A5D6-43A2-28A7: ${S3.syncJobs} job × ${P3.schedulerJobMonth} USD/job-tháng (0,003225806 USD/job-ngày × 31)`,
+    S3.syncJobs * P3.schedulerJobMonth, 'E36; https://cloud.google.com/scheduler/pricing'],
+  ['connectors', 'Bucket tạm connector-ingest (file tải từ Drive/SharePoint để tách chunk, tự xóa sau 7 ngày, CMEK)',
+    `GCS Standard Singapore: ${S3.ingestGbMonth} GB-tháng × ${P3.gcsStd} USD + ${S3.ingestClassAK}.000 thao tác ghi × ${P3.gcsClassA} USD (SKU 76BA-5CAD-4338, 4DBF-185F-A415)`,
+    S3.ingestGbMonth * P3.gcsStd + S3.ingestClassAK * 1000 * P3.gcsClassA, 'E32; https://cloud.google.com/storage/pricing'],
+
+  ['database', 'Cloud SQL PostgreSQL 16 Regional HA (primary + standby khác zone, failover tự động): user, ACL, lịch sử chat 12 tháng, memory, metadata workspace',
+    `db-custom-4-16384, asia-southeast1, REGIONAL (multi-AZ): (${S3.dbVcpu} vCPU × ${P3.sqlRegVcpu} + ${S3.dbRamGb} GB × ${P3.sqlRegRam}) = ${f(sqlRegHour, 4)} USD/giờ × ${HOURS_24x7} giờ = ${f(sqlRegHour * HOURS_24x7)} USD, committed use 1 năm trả ${P3.sqlCud1y * 100}% (giảm 25%, SKU B4F3-4753-84D8). SKU 0152-2835-C929, 37B4-B2B7-C640`,
+    sqlRegHour * HOURS_24x7 * P3.sqlCud1y, 'E30; E31; https://cloud.google.com/sql/pricing'],
+  ['database', 'Ổ SSD Cloud SQL Regional HA 200 GB (chat 12 tháng ~84 GB, vector ~8 GB, memory + metadata ~4 GB, ×1,5 WAL/bloat, dư IOPS)',
+    `Regional Standard storage Singapore, SKU 83A6-DA61-7797: ${S3.dbSsdGb} GB × ${P3.sqlRegSsd} USD/GB-tháng (giá regional đã gồm bản sao ở zone standby). Tự tăng tối đa 500 GB`,
+    S3.dbSsdGb * P3.sqlRegSsd, 'E30; https://cloud.google.com/sql/pricing'],
+  ['database', 'Cloud SQL staging (môi trường staging): zonal, chỉ bật giờ hành chính bằng Cloud Scheduler',
+    `db-custom-1-3840 zonal: (${S3.stgVcpu} × ${P3.sqlZonVcpu} + ${S3.stgRamGb} × ${P3.sqlZonRam}) × ${HOURS_OFFICE} giờ = ${f(sqlStgHour * HOURS_OFFICE)} USD; SSD ${S3.stgSsdGb} GB × ${P3.sqlZonSsd} = ${f(S3.stgSsdGb * P3.sqlZonSsd)} USD; ${S3.stagingDbJobs} job Scheduler bật/tắt × ${P3.schedulerJobMonth} USD (SKU DE86-B401-E60F, EF83-F6A8-8EA7, 45B3-606F-EE91, A5D6-43A2-28A7)`,
+    sqlStgHour * HOURS_OFFICE + S3.stgSsdGb * P3.sqlZonSsd + S3.stagingDbJobs * P3.schedulerJobMonth, 'E30; E36; https://cloud.google.com/sql/pricing'],
+
+  ['vector_db', 'pgvector (HNSW, 768 chiều) trong Cloud SQL: ~800.000 chunk knowledge base + memory, lọc theo ACL gốc bằng Row-Level Security ngay trong truy vấn ANN',
+    'Nằm trong dòng database (Cloud SQL Regional HA ở trên): vector ~8 GB đã tính vào ổ 200 GB, HNSW index ~3 GB nằm trong RAM 16 GB. Không thuê thêm dịch vụ vector riêng; RLS lọc theo acl_principals nên user không thấy chunk mình không có quyền',
+    0, 'E30; E37; https://cloud.google.com/sql/docs/postgres/work-with-vectors'],
+
+  ['object_storage', 'GCS workspace riêng từng user (prefix user-workspaces/{user_id}/, UBLA, CMEK, quota 10 GB): dữ liệu ≤ 90 ngày ở lớp Standard',
+    `Standard Storage Singapore, SKU 76BA-5CAD-4338: ${S3.gcsStdGb} GB (350 GB mới/tháng × 3 tháng; 2.000 user × ~160 MB/tháng gồm upload, file agent xuất, ảnh cấp 5, kết quả sandbox, +10% phiên bản cũ) × ${P3.gcsStd} USD/GB-tháng`,
+    S3.gcsStdGb * P3.gcsStd, 'E32; https://cloud.google.com/storage/pricing'],
+  ['object_storage', 'GCS workspace: file cũ hơn 90 ngày tự chuyển Nearline bằng lifecycle rule',
+    `Nearline Storage Singapore, SKU 4453-FEE4-941B: ${S3.gcsNearlineGb} GB (tháng 4-12 × 350 GB) × ${P3.gcsNearline} USD/GB-tháng. Tổng workspace 4.200 GB = 2,1 GB/user, dưới quota 10 GB`,
+    S3.gcsNearlineGb * P3.gcsNearline, 'E32; https://cloud.google.com/storage/pricing'],
+  ['object_storage', 'Thao tác GCS workspace: ghi, đọc, chuyển lớp lifecycle, đọc lại file Nearline',
+    `Class A ${S3.gcsClassAM} triệu × ${P3.gcsClassA} + Class B ${S3.gcsClassBM} triệu × ${P3.gcsClassB} + chuyển lớp ${S3.gcsLifecycleObjK}.000 object × ${P3.gcsNearlineClassA} + retrieval ${S3.gcsRetrievalGb} GB × ${P3.gcsNearlineRetrieval} USD (SKU 4DBF-185F-A415, 7870-010B-2763, 9559-D2EC-1D33, 8D92-97F6-DDF3); tính toàn bộ số thao tác theo đơn giá niêm yết`,
+    S3.gcsClassAM * 1e6 * P3.gcsClassA + S3.gcsClassBM * 1e6 * P3.gcsClassB + S3.gcsLifecycleObjK * 1000 * P3.gcsNearlineClassA + S3.gcsRetrievalGb * P3.gcsNearlineRetrieval,
+    'E32; https://cloud.google.com/storage/pricing'],
+  ['object_storage', 'Bucket workspace cho staging (dữ liệu giả, tự xóa sau 30 ngày)',
+    `Standard Storage Singapore, SKU 76BA-5CAD-4338: ${S3.gcsStagingGb} GB × ${P3.gcsStd} USD/GB-tháng`,
+    S3.gcsStagingGb * P3.gcsStd, 'E32; https://cloud.google.com/storage/pricing'],
+
+  ['cache_queue', 'Memorystore for Redis Standard HA 5 GB (primary + replica khác zone, failover tự động): phiên, ngữ cảnh hội thoại, cache RAG, bộ đếm quota, cờ hủy tác vụ agent',
+    `Redis Capacity Standard M2 Singapore, SKU A728-AD0D-27B4: ${S3.redisGb} GB × ${HOURS_24x7} giờ × ${P3.redisStdM2} USD/GB-giờ. Chọn 5 GB vì bậc M2 rẻ hơn: 4 GB bậc M1 = 4 × 730 × ${P3.redisStdM1} = ${f(4 * HOURS_24x7 * P3.redisStdM1)} USD. Staging dùng Redis container trên node staging, nằm trong compute`,
+    S3.redisGb * HOURS_24x7 * P3.redisStdM2, 'E33; https://cloud.google.com/memorystore/docs/redis/pricing'],
+  ['cache_queue', 'Cloud Tasks: hàng đợi agent chạy nền cấp 4 (retry tối đa 10 phút) và hàng đợi đồng bộ connector',
+    `Cloud Tasks Operations, SKU 378A-D762-1F74: ${S3.tasksOpsM} triệu operation (132.000 tác vụ agent × 6 bước × 2 = 1,58 triệu; sync theo webhook 2,2 triệu; delta tick 0,35 triệu) × ${P3.tasksPerMillion} USD/triệu, tính toàn bộ theo đơn giá niêm yết`,
+    S3.tasksOpsM * P3.tasksPerMillion, 'E34; https://cloud.google.com/tasks/pricing'],
+].map(r => [r[0], r[1], r[2], r2(r[3]), r[4]]);
+
+// ---------- Dong cua TV2/TV4: chu so huu dien Ghi chu, Chi phi, Bang chung ----------
 // Dien [component, y_nghia, ghi_chu, chi_phi (so), bang_chung]; de chi_phi = null neu chua co.
 const TODO = who => `CHỜ ${who} điền: dịch vụ/SKU, region, đơn giá × số lượng`;
 const TEAM_ROWS = [
@@ -128,11 +219,7 @@ const TEAM_ROWS = [
   ['llm', 'Imagen cho tác vụ cấp 5 (mockup, sơ đồ, ảnh minh họa)', TODO('TV2'), null, ''],
   ['embedding', 'Embedding tài liệu cho RAG (index lần đầu + hằng ngày)', TODO('TV2'), null, ''],
   ['gateway', 'LLM gateway: routing 5 cấp, quota theo user/đơn vị, fallback, log token', TODO('TV2'), null, ''],
-  ['connectors', 'Connectors Google Workspace, M365, Notion, Jira, Confluence', TODO('TV3'), null, ''],
-  ['database', 'Cloud SQL PostgreSQL HA (regional) cho metadata, lịch sử chat', TODO('TV3'), null, ''],
-  ['vector_db', 'pgvector trên Cloud SQL, lọc kết quả theo ACL gốc', TODO('TV3'), null, ''],
-  ['object_storage', 'GCS workspace riêng từng user (prefix + CMEK, lifecycle)', TODO('TV3'), null, ''],
-  ['cache_queue', 'Memorystore Redis HA + Cloud Tasks cho agent chạy nền', TODO('TV3'), null, ''],
+  ...TV3_ROWS,
   ['sandbox', 'GKE Sandbox node pool (gVisor) chạy code của agent', TODO('TV4'), null, ''],
   ['authn', 'SSO tập đoàn (OIDC/SAML) + MFA', TODO('TV4'), null, ''],
   ['authz', 'RBAC/ABAC, ACL tài liệu, scope OAuth tối thiểu', TODO('TV4'), null, ''],
@@ -186,6 +273,15 @@ const EV = [
   ['E11', 'Cloud Build: build time e2-standard-2 0.006 USD/phút (SKU A464-9020-6404)', 'https://cloud.google.com/build/pricing'],
   ['E12', 'Artifact Registry storage 0.10 USD/GB-tháng (SKU 8502-299A-ABAF)', 'https://cloud.google.com/artifact-registry/pricing'],
   ['E13', 'Google Cloud Customer Care Standard Support: max(29 USD; 3% chi phí cloud hằng tháng)', 'https://cloud.google.com/support'],
+  // TV3: E30-E37 (ban ghi SKU goc: tv3_data/pricing/tv3_skus_2026-10-16.json)
+  ['E30', 'Cloud SQL for PostgreSQL, Singapore: Regional vCPU 0.1156 USD/giờ, RAM 0.0196 USD/GB-giờ, storage 0.476 USD/GB-tháng; Zonal vCPU 0.0578, RAM 0.0098, storage 0.238 (SKU 0152-2835-C929, 37B4-B2B7-C640, 83A6-DA61-7797, DE86-B401-E60F, EF83-F6A8-8EA7, 45B3-606F-EE91)', 'https://cloud.google.com/sql/pricing'],
+  ['E31', 'Cloud SQL committed use 1 năm, asia-southeast1: 0.0075 USD cho mỗi 0.01 USD/giờ cam kết, tức giảm 25% vCPU + RAM (SKU B4F3-4753-84D8)', 'https://cloud.google.com/sql/cud'],
+  ['E32', 'Cloud Storage Singapore: Standard 0.020, Nearline 0.010 USD/GB-tháng; Class A 0.05 USD/10.000, Class B 0.004 USD/10.000; Nearline Class A 0.10 USD/10.000; Nearline retrieval 0.01 USD/GB (SKU 76BA-5CAD-4338, 4453-FEE4-941B, 4DBF-185F-A415, 7870-010B-2763, 9559-D2EC-1D33, 8D92-97F6-DDF3)', 'https://cloud.google.com/storage/pricing'],
+  ['E33', 'Memorystore for Redis Standard tier, Singapore: M2 (5-10 GB) 0.075 USD/GB-giờ, M1 (1-4 GB) 0.114 USD/GB-giờ (SKU A728-AD0D-27B4, ABC0-67FF-FCAD)', 'https://cloud.google.com/memorystore/docs/redis/pricing'],
+  ['E34', 'Cloud Tasks: 0.40 USD/triệu operation (SKU 378A-D762-1F74)', 'https://cloud.google.com/tasks/pricing'],
+  ['E35', 'Pub/Sub: message delivery 40 USD/TiB, lưu message 0.27 USD/GB-tháng (SKU 027D-B6C7-CCA2, F9EB-D3E1-ABDF)', 'https://cloud.google.com/pubsub/pricing'],
+  ['E36', 'Cloud Scheduler: 0.10 USD/job-tháng = 0.003225806 USD/job-ngày (SKU A5D6-43A2-28A7)', 'https://cloud.google.com/scheduler/pricing'],
+  ['E37', 'Cloud SQL for PostgreSQL hỗ trợ extension pgvector (CREATE EXTENSION vector), không tính phí riêng ngoài instance', 'https://cloud.google.com/sql/docs/postgres/work-with-vectors'],
 ];
 const wsEv = XLSX.utils.aoa_to_sheet([['evidence_id', 'Mô tả', 'Link', 'Ngày chụp', 'Ảnh chụp màn hình (dán vào ô cùng dòng)'],
   ...EV.map(e => [...e, PRICE_DATE, ''])]);
