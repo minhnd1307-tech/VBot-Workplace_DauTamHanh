@@ -101,21 +101,23 @@ resource "google_container_cluster" "primary" {
 
 # ------------------------------------------------------------------------------
 # NODE POOL 1 - PRODUCTION APP: web/API, LLM gateway, orchestrator, connector workers,
-# RAG indexer, agent workers. min/max tính THEO MỖI ZONE (regional pool x 3 zone).
-#   Ngoài giờ: 1 node/zone = 3 node (vẫn đủ 3 AZ cho HA)
-#   Giờ cao điểm: tối đa var.max_nodes node/zone
+# RAG indexer, agent workers. Sizing theo bảng của TV2 (peak 3,5 RPS -> 4 node e2-standard-4).
+# Giới hạn tính trên TOÀN pool (total_*), không phải mỗi zone:
+#   Ngoài giờ hành chính: var.total_min_nodes = 1 node (giữ control loop, job nền)
+#   Giờ hành chính: CronJob nâng replica lúc 07:45 + topologySpreadConstraints theo zone
+#   -> autoscaler bật thêm 1 node mỗi zone, tổng 4 node trải 3 AZ (H7), 18:15 trả về 1 node.
 # ------------------------------------------------------------------------------
 resource "google_container_node_pool" "app_pool" {
   name               = "${var.project_prefix}-app-node-pool"
   location           = var.region
   cluster            = google_container_cluster.primary.name
   node_locations     = var.zones
-  initial_node_count = var.min_nodes
+  initial_node_count = 1
 
   autoscaling {
-    min_node_count  = var.min_nodes
-    max_node_count  = var.max_nodes
-    location_policy = "BALANCED"
+    total_min_node_count = var.total_min_nodes
+    total_max_node_count = var.total_max_nodes
+    location_policy      = "BALANCED"
   }
 
   management {

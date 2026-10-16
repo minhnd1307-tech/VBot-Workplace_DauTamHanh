@@ -32,7 +32,8 @@ Thành viên 2 phụ trách **"Trái tim"** của hệ thống: Bài toán Sizin
    * File: [G03_baogia.xlsx](G03_baogia.xlsx)
    * Script sinh tự động: [generate_baogia.py](generate_baogia.py)
    * Script kiểm thử validator: [validate_baogia.mjs](validate_baogia.mjs)
-   * Kết quả: **Verdict OK: ĐẠT (XANH LÁ)**, 0 lỗi, 0 cảnh báo. Tổng chi phí: **$11.656,65 / tháng** (~$5.83 / DAU / tháng).
+   * Kết quả: **Verdict OK: ĐẠT (XANH LÁ)**, 0 lỗi, 0 cảnh báo. Tổng chi phí: **$11.218,97 / tháng** (~$5.61 / DAU / tháng).
+   * ⚠️ **Bản chốt (TV1):** các dòng `compute`, `load_balancer`, `network`, `cicd`, `ops_labor`, `licenses`, `contingency` đã được TV1 tính lại theo giá Singapore có SKU. File được sinh bằng `node baogia/build_baogia.js` (giữ nguyên các dòng của TV2/TV3/TV4 trong [baogia/team_rows.json](baogia/team_rows.json)). **Không chạy lại `generate_baogia.py`** vì sẽ ghi đè các dòng TV1. Muốn sửa dòng của mình thì sửa `team_rows.json` rồi chạy lại `build_baogia.js`.
 5. 💻 **Mã Nguồn Microservice AI Gateway:**
    * File: [ai_gateway_service.py](ai_gateway_service.py)
    * Tích hợp gọi thực tế Vertex AI Google Cloud với model `gemini-3.8-flash`, hỗ trợ dynamic routing 5 cấp độ, tính toán quota H8 và đo SLA TTFT H6.

@@ -45,8 +45,8 @@
 | [tv3_data/sql/002_test_isolation.sql](tv3_data/sql/002_test_isolation.sql) | 7 kiểm thử cô lập user A/B |
 | [tv3_data/run_isolation_test.sh](tv3_data/run_isolation_test.sh) | Chạy schema và kiểm thử trên Docker `pgvector/pgvector:0.8.0-pg16` |
 | [tv3_data/pricing/tv3_skus_2026-10-16.json](tv3_data/pricing/tv3_skus_2026-10-16.json) | 21 bản ghi SKU gốc từ Cloud Billing Catalog API (bằng chứng đơn giá) |
-| [baogia/build_baogia.js](baogia/build_baogia.js) | Thêm khối `P3`, `S3`, `TV3_ROWS` (14 dòng) và bằng chứng E30–E37. Đã thay 5 dòng `CHỜ TV3` |
-| [baogia/Gxx_baogia.xlsx](baogia/Gxx_baogia.xlsx) | Sinh lại từ script, đã có dòng của TV3 |
+| [baogia/team_rows.json](baogia/team_rows.json) | Thay 5 dòng TV3 cũ (ước lượng từ bản G03 của TV2) bằng 14 dòng có SKU; thêm bằng chứng E30–E37, bỏ E09, E10 cũ |
+| [G03_baogia.xlsx](G03_baogia.xlsx) | Sinh lại bằng `node baogia/build_baogia.js`: **ĐẠT**, TOTAL 11.260,64 USD |
 | [slides/slide06_connectors_oauth.png](slides/slide06_connectors_oauth.png) / `.svg` | Sơ đồ Slide 6 |
 | [slides/slide07_workspace_du_lieu.png](slides/slide07_workspace_du_lieu.png) / `.svg` | Sơ đồ Slide 7 |
 | [slides/gen_tv3_diagrams.js](slides/gen_tv3_diagrams.js) | Script vẽ lại 2 sơ đồ |
@@ -205,7 +205,12 @@ Toàn bộ đơn giá lấy từ **Cloud Billing Catalog API** (`services/*/skus
 | cache_queue | Cloud Tasks | 4,2 × 0,40 | 1,68 |
 | | **Tổng TV3** | | **890,86** |
 
-**Kết quả validator** (`node check_baogia.js Gxx_baogia.xlsx`): 14 dòng của TV3 không có lỗi nào. File tổng hiện vẫn CHƯA ĐẠT, nhưng 25 lỗi còn lại đều thuộc 5 dòng của TV2 (dòng 2–6), 7 dòng của TV4 (dòng 21–27) và dòng `contingency` (đang chờ số `llm`).
+**Kết quả validator** (`node check_baogia.js ../G03_baogia.xlsx`): **ĐẠT**, 0 lỗi, 0 cảnh báo. TOTAL **11.260,64 USD/tháng** (5,63 USD/DAU).
+
+So với bản ước lượng cũ cho 5 component này (database 365,40, vector_db 80, object_storage 255, cache_queue 150, connectors 0, tổng 850,40 USD), bản mới tăng 40,46 USD. Nguyên nhân:
+- database tăng vì giá Cloud SQL Regional ở Singapore cao hơn giá cũ (0,1156 USD/vCPU-giờ so với 0,38 USD/giờ cho cả instance).
+- Redis 5 GB Standard HA theo giá Singapore là 273,75 USD, không phải 145 USD.
+- Bù lại, bỏ được Vertex Vector Search (80 USD), và GCS rẻ hơn nhờ lifecycle cùng sizing theo mức dùng thực tế (2,1 GB/user thay vì 5 GB/user).
 
 ### 6.3 Đòn bẩy FinOps của tầng dữ liệu
 
@@ -225,11 +230,11 @@ Toàn bộ đơn giá lấy từ **Cloud Billing Catalog API** (`services/*/skus
 
 | # | Việc | Ai | Ghi chú |
 |---|---|---|---|
-| 1 | Chụp ảnh bằng chứng E30–E37 dán vào sheet `BangChung` | TV1 (đang chụp E01–E13) hoặc TV3 | Link và SKU đã có. Ảnh phải thấy tên dịch vụ, SKU, region, đơn giá |
+| 1 | Chụp ảnh bằng chứng E30–E37 dán vào sheet `BangChung` | TV3 | Link và SKU đã có. Ảnh phải thấy tên dịch vụ, SKU, region, đơn giá |
 | 2 | Dòng `backup_dr`: backup Cloud SQL ~140 GB × 0,112 = **15,68 USD**, cộng log PITR ~35 GB × 0,112 = **3,92 USD** (SKU 5C0F-D226-757F) | TV4 | Số ước lượng của TV3 để TV4 dùng, chưa tính bản sao cross-region |
 | 3 | `secrets_kms`: 2.000 user × tối đa 5 SaaS = ~10.000 secret refresh token; mỗi thao tác GCS CMEK gọi KMS (~5,7 triệu thao tác/tháng) | TV4 | Ảnh hưởng chi phí Secret Manager và KMS |
 | 4 | Cloud NAT: lưu lượng connector ước tính ~90 GB/tháng (20.000 lượt gọi × 22 × 50 KB + 60 GB tải tài liệu), nằm trong mức 300 GB TV1 đã tính | TV1 | Không cần sửa |
-| 5 | Dòng `contingency` đang bằng 0, chờ số `llm` | TV2 → TV1 | |
+| 5 | TOTAL đổi từ 11.218,97 thành **11.260,64 USD** (5,63 USD/DAU): cập nhật Slide 11 và kịch bản | TV1 | Do 5 dòng TV3 thay đổi, `licenses` tự tính lại 3% |
 | 6 | Bật API `pubsub`, `cloudscheduler`, `storage`: module `data` đã tự bật. Nếu TV2 muốn gom vào `ai_gateway` thì có thể chuyển | TV2 | |
 | 7 | Đổi tên file báo cáo theo MSSV | TV3 | |
 
@@ -245,7 +250,7 @@ cd terraform && terraform init -backend=false && terraform validate
 bash tv3_data/run_isolation_test.sh
 
 # Báo giá
-cd baogia && npm install && node build_baogia.js && node check_baogia.js Gxx_baogia.xlsx
+cd baogia && npm install && node build_baogia.js && node check_baogia.js ../G03_baogia.xlsx
 
 # Sơ đồ Slide 6, 7
 cd slides && npm install && node gen_tv3_diagrams.js

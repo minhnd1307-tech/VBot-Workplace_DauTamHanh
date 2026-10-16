@@ -59,8 +59,8 @@ module "gke" {
   service_range_name      = module.network.service_range_name
   master_authorized_cidrs = var.master_authorized_cidrs
   app_node_machine_type   = var.app_node_machine_type
-  min_nodes               = var.app_min_nodes_per_zone
-  max_nodes               = var.app_max_nodes_per_zone
+  total_min_nodes         = var.app_total_min_nodes
+  total_max_nodes         = var.app_total_max_nodes
 
   # container.googleapis.com được bật trong module ai_gateway
   depends_on = [module.ai_gateway]

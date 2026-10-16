@@ -1,7 +1,12 @@
 {
   "name": "vbot-slides-diagrams",
   "private": true,
-  "description": "Sinh so do Slide 2, 3 (SVG + PNG)",
-  "scripts": { "build": "node gen_diagrams.js" },
-  "dependencies": { "@resvg/resvg-js": "2.6.2" }
+  "description": "Sinh so do Slide 2, 3 va hinh chi phi Slide 11 (SVG + PNG)",
+  "scripts": {
+    "build": "node gen_diagrams.js"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
 }

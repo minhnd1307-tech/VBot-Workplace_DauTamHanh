@@ -54,16 +54,16 @@ variable "app_node_machine_type" {
   default     = "e2-standard-4"
 }
 
-variable "app_min_nodes_per_zone" {
+variable "app_total_min_nodes" {
   type        = number
-  description = "So node toi thieu moi zone (ngoai gio)"
+  description = "So node app toi thieu toan pool (ngoai gio)"
   default     = 1
 }
 
-variable "app_max_nodes_per_zone" {
+variable "app_total_max_nodes" {
   type        = number
-  description = "So node toi da moi zone (gio cao diem)"
-  default     = 2
+  description = "So node app toi da toan pool (gio cao diem, theo sizing TV2)"
+  default     = 4
 }
 
 # Khong de mat khau mac dinh trong code: truyen qua terraform.tfvars (khong commit)
