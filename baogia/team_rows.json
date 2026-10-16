@@ -18,9 +18,9 @@
     {
       "component": "gateway",
       "y_nghia": "AI Gateway dinh tuyen model, circuit breaker, quota va canh bao ngan sach H8",
-      "ghi_chu": "2 container Cloud Run (prod va 1 staging) autoscale 220 gio hanh chinh x 0,08 USD = 35,20 USD; Cloud Monitoring API do quota va latency = 14,80 USD",
+      "ghi_chu": "Pod AI Gateway chay tren GKE (compute nằm trong dong compute); Cloud Monitoring API, Custom Metrics & Cloud Trace theo doi token quota va p95 TTFT H6, canh bao ngan sach H8 = 50,00 USD",
       "chi_phi": 50,
-      "bang_chung": "E03; https://cloud.google.com/run/pricing"
+      "bang_chung": "E03; https://cloud.google.com/stackdriver/pricing"
     },
     {
       "component": "connectors",
@@ -185,9 +185,9 @@
     },
     {
       "id": "E03",
-      "mo_ta": "Google Cloud Run serverless container cho AI Gateway",
-      "link": "https://cloud.google.com/run/pricing",
-      "ngay": "2026-10-15"
+      "mo_ta": "Google Cloud Monitoring, Custom Metrics & Cloud Trace Pricing",
+      "link": "https://cloud.google.com/stackdriver/pricing",
+      "ngay": "2026-10-16"
     },
     {
       "id": "E04",
