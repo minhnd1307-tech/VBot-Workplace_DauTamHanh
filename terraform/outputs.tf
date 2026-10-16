@@ -46,3 +46,9 @@ output "artifact_registry_repo" {
   value       = module.ai_gateway.artifact_registry_repo_id
   description = "Artifact Registry Repository cho CI/CD Container Images"
 }
+
+output "ai_gateway_endpoint" {
+  value       = module.ai_gateway.ai_gateway_endpoint_id
+  description = "Vertex AI Private Endpoint ID cho AI Gateway"
+}
+
