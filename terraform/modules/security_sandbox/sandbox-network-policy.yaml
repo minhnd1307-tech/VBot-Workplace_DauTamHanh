@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sandbox-strict-isolation
+  namespace: vbot-sandbox
+spec:
+  podSelector:
+    matchLabels:
+      role: sandbox-runner
+  policyTypes:
+  - Ingress
+  - Egress
+  # Ingress: Chỉ cho phép Coordinator Service trong cụm gửi lệnh thực thi vào
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: vbot-core
+      podSelector:
+        matchLabels:
+          app: agent-coordinator
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Egress: TUYỆT ĐỐI CHẶN INTERNET RA NGOÀI (NO EGRESS) VÀ CHẶN METADATA SERVER
+  # Chỉ cho phép DNS nội bộ kube-dns để phân giải nội bộ nếu cần
+  egress:
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # CHẶN TOÀN BỘ KẾT NỐI TỚI 169.254.169.254 (Google Cloud Instance Metadata Endpoint)
+  # nhằm chống leo thang đặc quyền từ bên trong sandbox

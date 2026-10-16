@@ -1,0 +1,48 @@
+# ==============================================================================
+# ROOT MODULE OUTPUTS: VBOT WORKPLACE
+# ==============================================================================
+
+output "vpc_id" {
+  value       = module.network.vpc_id
+  description = "VPC Network ID"
+}
+
+output "gke_cluster_name" {
+  value       = module.gke.cluster_name
+  description = "GKE Cluster Name"
+}
+
+output "gke_cluster_endpoint" {
+  value       = module.gke.cluster_endpoint
+  description = "GKE Cluster Endpoint"
+}
+
+output "cloud_sql_private_ip" {
+  value       = module.data.db_private_ip
+  description = "Cloud SQL Private IP"
+}
+
+output "workspace_bucket_name" {
+  value       = module.data.workspace_bucket_name
+  description = "Cloud Storage Workspace Bucket Name"
+}
+
+output "redis_host" {
+  value       = module.data.redis_host
+  description = "Memorystore Redis Host IP"
+}
+
+output "kms_key_id" {
+  value       = module.security_sandbox.kms_key_id
+  description = "Cloud KMS CryptoKey ID"
+}
+
+output "oauth_vault_secret_id" {
+  value       = module.security_sandbox.oauth_vault_secret_id
+  description = "Secret Manager Secret ID cho OAuth Token Vault"
+}
+
+output "artifact_registry_repo" {
+  value       = module.ai_gateway.artifact_registry_repo_id
+  description = "Artifact Registry Repository cho CI/CD Container Images"
+}
